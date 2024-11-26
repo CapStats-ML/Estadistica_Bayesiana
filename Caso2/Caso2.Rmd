@@ -1,0 +1,36 @@
+---
+title: " EXPLORACION EXPLORACION EXPLORACION EXPLORACION"
+subtitle: "CASO DE ESTUDIO 1 - ESTADÍSTICA BAYESIANA"
+author:
+  - name: "Cesar Augusto Prieto Sarmiento"
+    affiliation: |
+      Universidad Nacional de Colombia  
+      Departamento de Estadística
+    email: "ceprieto@unal.edu.co"
+  - name: "Luis Felipe Basto Ruiz"
+    affiliation: |
+      Universidad Nacional de Colombia  
+      Departamento de Estadística
+    email: "lbastor@unal.edu.co"
+website: "https://github.com/CapStats-ML"
+output:
+  html_document:
+    toc: false
+    fig_caption: true
+    template: template.html
+    code_folding: hide
+---
+
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,         # Mostrar el código en el documento
+  warning = FALSE,     # Ocultar warnings
+  message = FALSE,     # Ocultar mensajes
+  fig.width = 10,       # Ancho de las figuras
+  fig.height = 7,      # Alto de las figuras
+  fig.align = 'center' # Alinear las figuras en el centro
+)
+```
+
