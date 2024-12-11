@@ -1,27 +1,26 @@
 ---
-title: " EXPLORACION EXPLORACION EXPLORACION EXPLORACION"
-subtitle: "CASO DE ESTUDIO 1 - ESTADÍSTICA BAYESIANA"
+title: "CASO DE ESTUDIO 1 - ESTADÍSTICA BAYESIANA"
+subtitle: "MODELADO BAYESIANO DE LOS RESULTADOS EN MATEMÁTICAS DE LA PRUEBA SABER 11: UN ESTUDIO DE TENDENCIAS"
 author:
-  - name: "Cesar Augusto Prieto Sarmiento"
-    affiliation: |
-      Universidad Nacional de Colombia  
-      Departamento de Estadística
-    email: "ceprieto@unal.edu.co"
   - name: "Luis Felipe Basto Ruiz"
     affiliation: |
       Universidad Nacional de Colombia  
       Departamento de Estadística
     email: "lbastor@unal.edu.co"
+  - name: "Cesar Augusto Prieto Sarmiento"
+    affiliation: |
+      Universidad Nacional de Colombia  
+      Departamento de Estadística
+    email: "ceprieto@unal.edu.co"
 website: "https://github.com/CapStats-ML"
 output:
   html_document:
+    mathjax: "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
     toc: false
     fig_caption: true
     template: template.html
     code_folding: hide
 ---
-
-
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(
@@ -34,3 +33,45 @@ knitr::opts_chunk$set(
 )
 ```
 
+```{r setwd, message=FALSE, warning=FALSE, include=FALSE}
+setwd("~/REPOS GIT/Estadistica_Bayesiana/Caso1")
+```
+
+```{r libraries, message=FALSE, warning=FALSE, include=FALSE}
+library(readr)
+library(dplyr)
+library(tidyr)
+library(RColorBrewer)
+library(kableExtra)
+library(ggplot2)
+library(reshape2)
+```
+
+# INTRODUCCIÓN
+
+La base de datos recoge información de estudiantes que participaron en la Prueba Saber 11, una evaluación nacional administrada por el ICFES. Los datos abarcan los 32 departamentos de Colombia y Bogotá, desde el segundo semestre de 2015 $(t=1)$ hasta el segundo semestre de 2023 $(t=9)$, permitiendo un análisis de tendencias en el desempeño académico en nueve períodos de observación. La prueba evalúa la preparación de estudiantes próximos a finalizar la educación media y es clave para el acceso a la educación superior.
+
+La sección de matemáticas mide competencias en razonamiento cuantitativo, resolución de problemas y análisis de datos, con puntajes entre 0 y 100, diseñados para tener un promedio teórico de 50 y una desviación estándar de 10. Los resultados son comparables entre cohortes gracias a procesos de validación psicométrica y el uso de la Teoría de Respuesta al Ítem (TRI). Esto garantiza que los puntajes reflejen con precisión las habilidades matemáticas, facilitando análisis educativos, diseño de políticas y mejora de la calidad educativa.
+
+::: callout-note
+TOCA TENER EN CUENTA QUE LAS BASES DE DATOS QUE PROPORCIONO EL DOCENTE LES HACE FALTA LA PRIMERA COLUMNA (EL NOMBRE) Y ESTO HACE QUE LOS DATOS SALGAN CORRIDOS PARA SOLUCIONAR ESTO, SE INTRODUJO AL PRINCIPIO DEL DOCUMENTO .txt LA LINEA "INTRO"; Y DE ESTA FORMA PODER IMPORTAR DIRECTAMENTE ESTOS ARCHIVOS.
+:::
+
+```{r load_data, message=FALSE, warning=FALSE, include=FALSE}
+# Lista los archivos en el directorio
+nombres_archivos <- list.files("C:/Users/capst/OneDrive/Documentos/REPOS GIT/Estadistica_Bayesiana/Caso1/Bases")
+
+# Crea una lista vacía para almacenar las bases de datos
+bases <- list()
+
+# Itera sobre los nombres de los archivos
+for (name in nombres_archivos) {
+  # Lee el archivo y lo guarda en la lista "bases"
+  bases[[name]] <- read_delim(paste("C:/Users/capst/OneDrive/Documentos/REPOS GIT/Estadistica_Bayesiana/Caso1/Bases/", name, sep = ""), delim = ";", escape_double = FALSE, trim_ws = TRUE)
+  }
+```
+
+```{r verificacion, message=FALSE, warning=FALSE, include=FALSE}
+BD1 <- bases[[1]]
+head(BD1)
+```

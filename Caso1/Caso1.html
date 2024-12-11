@@ -11,7 +11,7 @@
 
 
 
-<title>EXPLORACION EXPLORACION EXPLORACION EXPLORACION</title>
+<title>CASO DE ESTUDIO 1 - ESTADÍSTICA BAYESIANA</title>
 
 <script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
 // be compatible with the behavior of Pandoc < 2.8).
@@ -290,16 +290,16 @@ window.initializeCodeFolding = function(show) {
 
 <style type="text/css">
 h1 {
-font-size: 28px;
+font-size: 25px;
 }
 h1.title {
 font-size: 30px;
 }
 h2 {
-font-size: 30px;
+font-size: 22px;
 }
 h3 {
-font-size: 24px;
+font-size: 20px;
 }
 h4 {
 font-size: 18px;
@@ -380,23 +380,24 @@ $(document).ready(function () {
 
 
 
-<center><h1 class="title toc-ignore" style="color: #000000;"><b>EXPLORACION
-EXPLORACION EXPLORACION EXPLORACION</b></h1></center>
-<center><h3 class="subtitle" style="color: #4d4d4d;"><b>CASO DE ESTUDIO
-1 - ESTADÍSTICA BAYESIANA</b></h3></center>
+<center><h1 class="title toc-ignore" style="color: #000000;"><b>CASO DE
+ESTUDIO 1 - ESTADÍSTICA BAYESIANA</b></h1></center>
+<center><h2 class="subtitle" style="color: #4d4d4d;"><b>MODELADO
+BAYESIANO DE LOS RESULTADOS EN MATEMÁTICAS DE LA PRUEBA SABER 11: UN
+ESTUDIO DE TENDENCIAS</b></h2></center>
 
-<h4 class="author"><p>Cesar Augusto Prieto Sarmiento</p></h4>
-<address class="author_afil" style="margin-bottom: 5px;">
-  <p>Universidad Nacional de Colombia<br />
-  Departamento de Estadística</p>
-</address>
-<a class="author_email" style="margin-top: 5px;"><a href="mailto:ceprieto@unal.edu.co" class="email">ceprieto@unal.edu.co</a></a>
 <h4 class="author"><p>Luis Felipe Basto Ruiz</p></h4>
 <address class="author_afil" style="margin-bottom: 5px;">
   <p>Universidad Nacional de Colombia<br />
   Departamento de Estadística</p>
 </address>
 <a class="author_email" style="margin-top: 5px;"><a href="mailto:lbastor@unal.edu.co" class="email">lbastor@unal.edu.co</a></a>
+<h4 class="author"><p>Cesar Augusto Prieto Sarmiento</p></h4>
+<address class="author_afil" style="margin-bottom: 5px;">
+  <p>Universidad Nacional de Colombia<br />
+  Departamento de Estadística</p>
+</address>
+<a class="author_email" style="margin-top: 5px;"><a href="mailto:ceprieto@unal.edu.co" class="email">ceprieto@unal.edu.co</a></a>
 
 
 
@@ -404,7 +405,32 @@ EXPLORACION EXPLORACION EXPLORACION</b></h1></center>
 </div>
 
 
-
+<div id="introducción" class="section level1">
+<h1>INTRODUCCIÓN</h1>
+<p>La base de datos recoge información de estudiantes que participaron
+en la Prueba Saber 11, una evaluación nacional administrada por el
+ICFES. Los datos abarcan los 32 departamentos de Colombia y Bogotá,
+desde el segundo semestre de 2015 <span class="math inline">\((t=1)\)</span> hasta el segundo semestre de 2023
+<span class="math inline">\((t=9)\)</span>, permitiendo un análisis de
+tendencias en el desempeño académico en nueve períodos de observación.
+La prueba evalúa la preparación de estudiantes próximos a finalizar la
+educación media y es clave para el acceso a la educación superior.</p>
+<p>La sección de matemáticas mide competencias en razonamiento
+cuantitativo, resolución de problemas y análisis de datos, con puntajes
+entre 0 y 100, diseñados para tener un promedio teórico de 50 y una
+desviación estándar de 10. Los resultados son comparables entre cohortes
+gracias a procesos de validación psicométrica y el uso de la Teoría de
+Respuesta al Ítem (TRI). Esto garantiza que los puntajes reflejen con
+precisión las habilidades matemáticas, facilitando análisis educativos,
+diseño de políticas y mejora de la calidad educativa.</p>
+<div class="callout-note">
+<p>TOCA TENER EN CUENTA QUE LAS BASES DE DATOS QUE PROPORCIONO EL
+DOCENTE LES HACE FALTA LA PRIMERA COLUMNA (EL NOMBRE) Y ESTO HACE QUE
+LOS DATOS SALGAN CORRIDOS PARA SOLUCIONAR ESTO, SE INTRODUJO AL
+PRINCIPIO DEL DOCUMENTO .txt LA LINEA “INTRO”; Y DE ESTA FORMA PODER
+IMPORTAR DIRECTAMENTE ESTOS ARCHIVOS.</p>
+</div>
+</div>
 
 
  
