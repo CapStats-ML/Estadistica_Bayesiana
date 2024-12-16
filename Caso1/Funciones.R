@@ -4,6 +4,9 @@ bayesian_analysis <- function(dat, depto_res_col, depto_code, score_col,
   # Filtrar los datos para el departamento
   depto_data <- dat[dat[[depto_res_col]] == depto_code, score_col]
   
+  # Eliminar valores faltantes
+  depto_data <- depto_data[!is.na(depto_data)]
+  
   # Tamaño de muestra
   n <- length(depto_data)
   
@@ -62,4 +65,52 @@ bayesian_analysis <- function(dat, depto_res_col, depto_code, score_col,
 }
 
 
+# Funcion para obetener las tablas en formato que R pueda leerlas
+procesar_kable <- function(tabla_kable) {
+  # Filtrar filas que contengan datos (descartamos encabezados y separadores)
+  datos <- tabla_kable[-c(1, 2)] 
+  
+  # Eliminar los bordes "|" y dividir las columnas
+  datos <- gsub("^\\||\\|$", "", datos) # Quitar bordes
+  datos <- strsplit(datos, "\\|") # Dividir por columnas
+  
+  # Convertir a data frame
+  df <- do.call(rbind, datos) |> as.data.frame(stringsAsFactors = FALSE)
+  
+  # Usar la primera fila como encabezado
+  colnames(df) <- as.character(df[1, ])
+  df <- df[-1, , drop = FALSE] # Eliminar la fila de encabezados
+  
+  # Filtrar filas con separadores (ej. "------------")
+  df <- df[!apply(df, 1, function(row) any(grepl("[-]+", row))), ]
+  
+  # Si no hay datos numéricos, retornar el data frame tal como está
+  if (ncol(df) < 2) {
+    warning("La tabla no tiene columnas suficientes para procesar.")
+    return(df)
+  }
+  
+  # Convertir a numéricas las columnas relevantes
+  df <- df %>% mutate(across(-1, ~ as.numeric(.), .names = "{.col}"))
+  
+  return(df)
+}
 
+
+# Función para crear mapas individuales
+create_map <- function(data, year, titulo = "MAPA DE BOGOTÁ", subtitulo = "PROM EN MATEMÁTICAS PARA BOGOTÁ") {
+  ggplot(data = data) +
+    geom_sf(aes(fill = Theta), color = "white", size = 0.2) +
+    scale_fill_gradient2(
+      low = "#ff9818", mid = "#dc5858", high = "#6a0d83", 
+      midpoint = mean(theta), name = "THETA", limits = c(min_theta, max_theta) # Escala global de Theta
+    ) +
+    ggtitle(label = paste(titulo, year),
+            subtitle = subtitulo ) +
+    theme_void() +
+    theme(
+      plot.title = element_text(size = 10, face = "bold", hjust = 0.5),
+      plot.subtitle = element_text(size = 8, face = "bold", hjust = 0.5, color = "grey40"),
+      legend.position = "right" # Colocamos leyenda globalmente
+    )
+}

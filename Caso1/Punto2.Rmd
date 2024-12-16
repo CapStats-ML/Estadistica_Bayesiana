@@ -16,7 +16,7 @@ La lista anterior muestra los distintos departamentos con su respectivo codigo, 
 
 # Lista de códigos de departamentos únicos en los datos
 departamentos <- unique(dat$ESTU_COD_RESIDE_DEPTO)
-departamentos <- departamentos[departamentos != 88]
+#departamentos <- departamentos[departamentos != 88]
 
 resultados_departamentos <- list()
 
@@ -73,7 +73,7 @@ Antes de graficar los 5 mejores, se puede hacer util tener el grafico del mapa c
 
 ```{r}
 shp = sf::st_read("MGN2023_DPTO_POLITICO/MGN_ADM_DPTO_POLITICO.shp", quiet = T)
-shp <- shp[shp$dpto_ccdgo != "88", ] # Eliminar el departamento 88
+#shp <- shp[shp$dpto_ccdgo != "88", ] # Eliminar el departamento 88
 
 # Crear una columna que identifique si el departamento está entre los mejores
 df_resultados$Destacado <- ifelse(df_resultados$Departamento %in% mejores_departamentos$Departamento, "Destacado", "No Destacado")

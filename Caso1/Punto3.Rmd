@@ -14,13 +14,13 @@ Las tablas de los resultados para los  5 peores departamentos se pueden ver a co
 
 ```{r}
 # Extraer los 5 mejores departamentos
-peores <- c("47", "44", "91", "27", "99")  # Departamentos destacados
+peores <- c("44", "88", "91", "27", "99")  # Departamentos destacados
 lista_resultados <- resultados_departamentos[peores]
 
 # Extraer las tablas de resultados
 
 tablas_resultados <- lapply(lista_resultados, function(x) x$tabla)
-names(tablas_resultados) <- c("Magdalena", "La Guajira", "Amazonas", "Choco", "Vichada")
+names(tablas_resultados) <- c("La Guajira", "San Andres", "Amazonas", "Choco", "Vichada")
 
 tablas_resultados
 ```

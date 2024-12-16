@@ -1,0 +1,148 @@
+El enunciado del 4to punto a desarrollar dice lo siguiente:  Para Bogotá en todos los periodos ($t=1,\ldots,9$), calcule la media posterior y el intervalo de credibilidad al 95$\%$ de confianza para el coeficiente de variación $\zeta$. Presente los resultados mediante una visualización que muestre simultáneamente las medias posteriores y los intervalos de credibilidad.
+
+Con esto los paso a seguir son los siguientes:
+
+   - Repetir el análisis anterior, pero enfocado en el coeficiente de variación.
+   - Presentar los resultados de manera gráfica.
+
+```{r}
+resultados <- list()
+
+for (i in 1:length(bases)) {
+  dat <- bases[[i]]
+  dat <- as.data.frame(dat)
+  
+  resultados[[i]] <- bayesian_analysis(dat, depto_res_col = "ESTU_COD_RESIDE_DEPTO", 
+                                  depto_code = 11, score_col = "PUNT_MATEMATICAS",
+                                  save_samples = FALSE)
+}
+
+tablas <- lapply(resultados, function(x) x$resultados);tablas
+```
+
+
+Luego la visualización de estos resultados estaría dada de la siguiente manera 
+
+```{r}
+tablas_procesadas <- lapply(tablas, procesar_kable)
+
+# Extraer los datos necesarios
+años <- 2015:2023
+
+```
+
+```{r}
+cv <- numeric(length(tablas_procesadas))
+
+for (i in 1:length(tablas_procesadas)) {
+  cv[i] <- as.numeric(tablas_procesadas[[i]]$` Estimación `[3])
+}
+
+```
+
+```{r}
+
+ic_inf <- numeric(length(tablas_procesadas))
+for (i in 1:length(tablas_procesadas)) {
+  ic_inf[i] <- as.numeric(tablas_procesadas[[i]]$` L. Inf. `[3])
+}
+
+ic_sup <- numeric(length(tablas_procesadas))
+for (i in 1:length(tablas_procesadas)) {
+  ic_sup[i] <- as.numeric(tablas_procesadas[[i]]$` L. Sup. `[3])
+}
+
+```
+
+
+
+```{r}
+# Definir colores en función del valor de Theta (personalizable)
+colores <- rep("black", length(theta))
+colores[cv < 0.19] <- "red" # Ejemplo: rojo si Theta < 50
+colores[cv > 0.21] <- "royalblue"
+
+par(mfrow = c(1, 1), mar = c(5, 5, 4, 4), bg = "white")
+
+# Configurar el gráfico
+plot(
+  NA, NA, 
+  xlab = expression(paste("ESTIMACIÓN DE ", zeta)), 
+  ylab = "AÑO", 
+  xlim = range(c(ic_inf, ic_sup)), 
+  ylim = c(2015, 2023), 
+  main = "ESTIMACION COEF de VAR DEL PUNTAJE EN MATEMATICAS EN BOGOTÁ", 
+  yaxt = "n", cex.axis = 0.7, cex.lab = 0.8, 
+  font.lab = 2, font.main = 2, cex.main = 1, 
+  col.axis = "grey20", col.main = "black", 
+  font = 2, fg = alpha('grey20', 1), family = "sans"
+)
+
+# Eje Y con los años
+axis(side = 2, at = años, labels = años, las = 2, cex.axis = 0.7, col = "grey20")
+
+# Líneas de referencia
+abline(v = 50, col = "gray", lwd = 3)
+abline(h = años, col = "lightgray", lwd = 1)
+
+# Dibujar los intervalos de confianza y los puntos
+for (i in seq_along(años)) {
+  segments(x0 = ic_inf[i], y0 = años[i], x1 = ic_sup[i], y1 = años[i], col = colores[i])
+  points(cv[i], años[i], pch = 16, cex = 0.8, col = colores[i])
+}
+
+# Agregar título al gráfico
+mtext("SIMULACIÓN MONTE CARLO DE LOS VALORES DE Cvar POR AÑOS", side = 3, line = 0.5, cex = 0.8, col = "grey20", font = 2)
+
+# Leyenda
+legend("topright", legend = c("CV", "IC 95%"), col = c("red", "gray"), lty = c(1, 1), lwd = 1.2, cex = 0.8)
+
+```
+
+
+Ahora, obervemos en el mapa como se comporta el coeficiente de variacion de los puntajes de matemáticas en Bogotá en los diferentes periodos.
+
+
+```{r}
+# Datos de Theta y años
+theta <- c(0.224, 0.196, 0.207, 0.202, 0.206, 0.180, 0.208, 0.210, 0.218)
+years <- 2015:2023
+theta_df <- data.frame(year = years, Theta = theta)
+
+bogota_shp <- shp[shp$dpto_ccdgo == 11, ]
+
+# Replicar la geometría y asignar Theta
+bogota_shp_rep <- bogota_shp %>%
+  slice(rep(1, length(years))) %>% # Replicar la fila tantas veces como años
+  mutate(year = years) %>%         # Asignar los años correspondientes
+  left_join(theta_df, by = "year") # Incorporar el valor de Theta
+
+# Crear la escala global para Theta
+min_theta <- min(theta)
+max_theta <- max(theta)
+```
+
+
+```{r}
+# Generar un mapa para extraer la leyenda global
+legend_map <- create_map(bogota_shp_rep %>% filter(year == 2015), 2015)
+legend <- cowplot::get_legend(legend_map)
+
+# Generar una lista de mapas sin leyendas
+maps <- lapply(years, function(year) {
+  year_data <- bogota_shp_rep %>% filter(year == !!year)
+  create_map(year_data, year, subtitulo = "CV EN MATEMÁTICAS PARA BOGOTÁ") +
+    theme(legend.position = "none")
+})
+
+# Combinar todos los mapas en una cuadrícula
+combined_maps <- plot_grid(plotlist = maps, ncol = 3)
+
+# Agregar la leyenda global al lado de los mapas
+final_plot <- plot_grid(combined_maps, legend, ncol = 2, rel_widths = c(10, 1))
+
+# Mostrar el resultado
+print(final_plot)
+
+```
+

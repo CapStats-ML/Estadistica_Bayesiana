@@ -47,6 +47,7 @@ library(RColorBrewer)
 library(kableExtra)
 library(ggplot2)
 library(reshape2)
+library(cowplot)
 
 source("Funciones.R")
 ```
@@ -123,6 +124,18 @@ for (name in nombres_archivos) {
   }
 ```
 
+```{r}
+# Elimina los valores NA en la columna "PUNT_MATEMATICAS" para cada base
+for (name in names(bases)) {
+  # Revisa si la columna "PUNT_MATEMATICAS" existe en la base
+  if ("PUNT_MATEMATICAS" %in% colnames(bases[[name]])) {
+    # Filtra las filas donde "PUNT_MATEMATICAS" no sea NA
+    bases[[name]] <- bases[[name]][!is.na(bases[[name]]$PUNT_MATEMATICAS), ]
+  }
+}
+```
+
+
 ## **1. Estimación de parámetros para Bogotá en 2023-2**
    
 ```{r child='Punto1.Rmd'}
@@ -139,12 +152,14 @@ for (name in nombres_archivos) {
 ```
 
 ### **4. Evolución temporal de Bogotá**
-   - Calcular las medias posteriores y los intervalos de credibilidad para Bogotá en cada período (t = 1 a 9).
-   - Generar visualizaciones que muestren la evolución de estos valores a través del tiempo.
+
+```{r child='Punto4.Rmd'}
+```
 
 ### **5. Coeficiente de variación en Bogotá**
-   - Repetir el análisis anterior, pero enfocado en el coeficiente de variación.
-   - Presentar los resultados de manera gráfica.
+
+```{r child='Punto5.Rmd'}
+```
 
 ### **6. Análisis de diferencias (ηt,k para Bogotá)**
    - Calcular $ηt,k = θt − θt−k$ para todos los $k$ posibles en cada período.
