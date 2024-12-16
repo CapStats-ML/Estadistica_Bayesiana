@@ -1,0 +1,114 @@
+El enunciado del primer punto a desarrollar dice lo siguiente: Para Bogotá en 2023-2 ($t=9$), calcule la media posterior, el coeficiente de variación posterior y el intervalo de credibilidad al 95$\%$ de confianza para la media $\theta$, la desviación estándar $\sigma$ y el coeficiente de variación $\zeta=100\,\frac{\sigma}{|\theta|}\%$. Reporte los resultados tabularmente.
+
+Con esto los paso a seguir son los siguientes:
+
+-   Ajustar el modelo Bayesiano (Normal-Gamma Inversa-Normal) con los hiperparámetros proporcionados.
+-   Calcular la media posterior, el coeficiente de variación posterior y los intervalos de credibilidad al $95\%$ para la media, desviación estándar y coeficiente de variación.
+-   Reportar los resultados en una tabla.
+
+Para resolver este problema, se utilizó un enfoque bayesiano basado en el modelo Normal-Gamma Inversa-Normal, que es particularmente adecuado para contextos donde tanto la media como la varianza de los datos son inciertas. Este modelo permite incorporar información previa (hiperparámetros) junto con los datos observados para actualizar el conocimiento sobre los parámetros de interés.
+
+El análisis se desarrollo en varias etapas:
+
+-   Selección y Filtrado de Datos
+-   Estadísticos Muestrales
+-   Actualización Bayesiana
+-   Simulación de Monte Carlo
+
+```{r}
+# Uso de la función
+dat <- bases[[9]]
+dat <- as.data.frame(dat)
+
+resultados <- bayesian_analysis(dat, depto_res_col = "ESTU_COD_RESIDE_DEPTO", depto_code = 11, score_col = "PUNT_MATEMATICAS", save_samples = TRUE)
+
+# Ver resultados
+tabla_resultados <- resultados$resultados
+print(tabla_resultados)
+```
+
+
+```{r}
+muestras_theta <- resultados$muestras$theta
+muestras_sigma2 <- resultados$muestras$sigma2
+muestras_CVar <- resultados$muestras$CVar
+```
+
+
+```{r}
+par(mfrow = c(1, 1), mar = c(5, 4, 4, 4), bg = "white")
+
+hist(muestras_theta, breaks = 20, main = "HIST. DE LAS MUESTRAS OBTENIDAS PARA THETA",
+     xlab = expression(paste("Estimación de ", theta)), ylab = "Densidad",
+     xlim = c(min(muestras_theta) - 0.1, max(muestras_theta) + 0.1), family = "sans", 
+     font.lab = 1, cex.lab = 0.8, font = 2, font.main = 2, cex.axis = 0.7, cex.main = 1.1,
+     cex = 1, col.main = 'black', col = alpha('#6497b1', 1),  fg = alpha('grey20', 1), col.axis = 'grey20', border = '#b3cde0')
+
+mtext("SIMULACIÓN MONTE CARLO DE LOS VALORES DE THETA", side = 3, line = 0.5, cex = 0.8, col = "grey20", font = 2)
+
+abline(v = mean(muestras_theta), col = "#ff0000", lwd = 1.2)
+abline(v = quantile(muestras_theta, probs = c(0.025, 0.975)), col = "grey5",
+       lwd = 1.2, lty = 2)
+
+legend("topright", legend = c("Media", "IC 95%"), col = c("#ff0000", "grey5"),
+       lty = c(1, 2), lwd = 1.2, cex = 0.8)
+
+```
+
+La media posterior $(\theta)$ es de 55.073, indicando que los estudiantes de Bogotá en 2023 tienen un puntaje promedio de 55.073 en la prueba de matemáticas, lo cual indica que en primedio sus puntajes son superiores al promedio teórico naciopnal de 50 puntos. 
+
+
+```{r}
+muestras_sigma <- sqrt(muestras_sigma2)
+
+par(mfrow = c(1, 1), mar = c(5, 4, 4, 4), bg = "white")
+
+hist(muestras_sigma, breaks = 20,  main = "HIST. DE LAS MUESTRAS OBTENIDAS PARA LA DESVIACIÓN",
+     xlab = expression(paste("Estimación de ", sigma)), ylab = "Densidad",
+     xlim = c(min(muestras_sigma) - 0.1, max(muestras_sigma) + 0.1), family = "sans", 
+     font.lab = 1, cex.lab = 0.8, font = 2, font.main = 2, cex.axis = 0.7, cex.main = 1.1,
+     cex = 1, col.main = 'black', col = alpha('#6497b1', 1),  fg = alpha('grey20', 1), col.axis = 'grey20', border = '#b3cde0')
+
+mtext("SIMULACIÓN MONTE CARLO DE LOS VALORES DE SIGMA", side = 3, line = 0.5, cex = 0.8, col = "grey30", font = 2)
+
+abline(v = mean(muestras_sigma), col = "#ff0000", lwd = 1.2)
+abline(v = quantile(muestras_sigma, probs = c(0.025, 0.975)), col = "grey5",
+       lwd = 1.2, lty = 2)
+
+legend("topright", legend = c("Media", "IC 95%"), col = c("#ff0000", "grey5"),
+       lty = c(1, 2), lwd = 1.2, cex = 0.8)
+
+```
+
+
+La desviación estándar posterior $(\sigma)$ es de 11.994, lo que sugiere que los puntajes de los estudiantes de Bogotá en 2023 tienen una variabilidad de aproximadamente 12 puntos alrededor de la media, la cual es más alta que la desviación estándar teórica de 10 puntos.
+
+
+```{r}
+
+par(mfrow = c(1, 1), mar = c(5, 4, 4, 4), bg = "white")
+
+hist(muestras_CVar, breaks = 20, main = "HIST. DE LAS MUESTRAS OBTENIDAS PARA EL COEFICIENTE DE VARIACIÓN",
+     xlab = expression(paste("Estimación de ", CVar)), ylab = "Densidad",
+     xlim = c(min(muestras_CVar) - 0.01, max(muestras_CVar) + 0.01), family = "sans", 
+     font.lab = 1, cex.lab = 0.8, font = 2, font.main = 2, cex.axis = 0.7, cex.main = 1.1,
+     cex = 1, col.main = 'black', col = alpha('#6497b1', 1),  fg = alpha('grey20', 1), col.axis = 'grey20', border = '#b3cde0')
+
+mtext("SIMULACIÓN MONTE CARLO DE LOS VALORES DE CVar", side = 3, line = 0.5, cex = 0.8, col = "grey30", font = 2)
+
+abline(v = mean(muestras_CVar), col = "#ff0000", lwd = 1.2)
+abline(v = quantile(muestras_CVar, probs = c(0.025, 0.975)), col = "grey5",
+       lwd = 1.2, lty = 2)
+
+legend("topright", legend = c("Media", "IC 95%"), col = c("#ff0000", "grey5"), 
+       lty = c(1, 2), lwd = 1.2, cex = 0.8)
+```
+
+
+El coeficiente de variación posterior $(\zeta)$ es de 0.217, lo que indica que la variabilidad relativa de los puntajes de los estudiantes de Bogotá en 2023 es del 21.7%, lo cual es más alto que el coeficiente de variación teórico de 20%.
+
+Los intervalos de credibilidad al $95\%$ son estrechos, lo que sugiere alta precisión en las estimaciones, respaldada por un tamaño de muestra suficientemente grande.
+
+Los resultados muestran que los estudiantes de Bogotá en $t=9$ tuvieron un desempeño promedio superior al estándar nacional, con una variabilidad relativamente superior a la esperada. Esto sugiere que Bogotá tiene un nivel de preparación en matemáticas por encima del esperado, aunque con cierta heterogeneidad dentro de su población estudiantil.
+
+

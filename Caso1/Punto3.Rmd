@@ -1,0 +1,73 @@
+El punto 3 se realiza de forma similar al punto 2, pero en este caso se busca identificar los cinco departamentos con peores calificaciones.
+
+Con esto los paso a seguir son los siguientes:
+
+   - Repetir el proceso anterior para identificar los cinco departamentos con peores calificaciones.
+   - Generar el mapa correspondiente (Colombia).
+   
+```{r}
+peores_departamentos <- tail(df_ordenado, 5)
+peores_departamentos
+```
+
+Las tablas de los resultados para los  5 peores departamentos se pueden ver a continuacion
+
+```{r}
+# Extraer los 5 mejores departamentos
+peores <- c("47", "44", "91", "27", "99")  # Departamentos destacados
+lista_resultados <- resultados_departamentos[peores]
+
+# Extraer las tablas de resultados
+
+tablas_resultados <- lapply(lista_resultados, function(x) x$tabla)
+names(tablas_resultados) <- c("Magdalena", "La Guajira", "Amazonas", "Choco", "Vichada")
+
+tablas_resultados
+```
+
+
+```{r}
+# Crear una columna que identifique si el departamento está entre los mejores
+df_resultados$Destacado <- ifelse(df_resultados$Departamento %in% peores_departamentos$Departamento, "No Destacado", "Destacado")
+
+# Ordenar los departamentos por el codigo 
+
+df_resultados <- df_resultados[order(df_resultados$Departamento), ]
+
+# Asegurarte de que los códigos son compatibles
+df_resultados$Departamento <- as.character(df_resultados$Departamento)
+
+
+shp$CODIGO_DEPTO <- as.character(shp$dpto_ccdgo)  # Cambia el nombre según tu shapefile
+
+library(dplyr)
+
+# Hacer el join
+map_data <- shp %>%
+  left_join(df_resultados, by = c("dpto_ccdgo" = "Departamento"))
+
+# Los NA de Theta se reemplazan por 0 para evitar problemas al graficar
+map_data$Theta <- ifelse(is.na(map_data$Theta), 0, map_data$Theta)
+
+map_data <- map_data %>%
+  filter(!is.na(Theta))  # Filtrar departamentos con valores de Theta
+```
+
+
+```{r}
+ggplot(data = map_data) +
+  geom_sf(aes(fill = ifelse(Destacado == "No Destacado", Theta, NA)), 
+          color = "white", size = 0.2, na.rm = TRUE) + 
+  geom_sf(data = filter(map_data, Destacado == "Destacado"), 
+          fill = "#eeaf61", color = "white", size = 0.2) +
+  scale_fill_gradient2(low = "#ff9818", mid = "#dc5858" ,high = "#6a0d83", midpoint = 42, name = "MEDIA\nPOSTERIOR") +
+  ggtitle(label = "MAPA DE COLOMBIA: DEPARTAMENTOS DESTACADOS",
+       subtitle = "CINCO PEORES PUNTAJES DE MATEMATICAS EN 2023") +
+  theme_minimal() + 
+  theme(plot.title = element_text(size = 12, face = "bold", hjust = 0.5),text = element_text(size = 10),
+        plot.subtitle = element_text(size = 10, face = "bold", hjust = 0.5, color = "grey40"),
+        axis.text = element_blank(), axis.ticks = element_blank(), panel.grid = element_blank())
+
+```
+
+   

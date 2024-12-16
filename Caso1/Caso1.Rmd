@@ -3,11 +3,13 @@ title: "CASO DE ESTUDIO 1 - ESTADÍSTICA BAYESIANA"
 subtitle: "MODELADO BAYESIANO DE LOS RESULTADOS EN MATEMÁTICAS DE LA PRUEBA SABER 11: UN ESTUDIO DE TENDENCIAS"
 author:
   - name: "Luis Felipe Basto Ruiz"
+    position: "Estudiante de Pregrado"
     affiliation: |
       Universidad Nacional de Colombia  
       Departamento de Estadística
     email: "lbastor@unal.edu.co"
   - name: "Cesar Augusto Prieto Sarmiento"
+    position: "Estudiante de Pregrado"
     affiliation: |
       Universidad Nacional de Colombia  
       Departamento de Estadística
@@ -15,16 +17,16 @@ author:
 website: "https://github.com/CapStats-ML"
 output:
   html_document:
-    mathjax: "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
     toc: false
     fig_caption: true
     template: template.html
     code_folding: hide
+    mathjax: default
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(
-  echo = TRUE,         # Mostrar el código en el documento
+  echo = FALSE,         # Mostrar el código en el documento
   warning = FALSE,     # Ocultar warnings
   message = FALSE,     # Ocultar mensajes
   fig.width = 10,       # Ancho de las figuras
@@ -45,17 +47,67 @@ library(RColorBrewer)
 library(kableExtra)
 library(ggplot2)
 library(reshape2)
+
+source("Funciones.R")
 ```
 
-# INTRODUCCIÓN
 
-La base de datos recoge información de estudiantes que participaron en la Prueba Saber 11, una evaluación nacional administrada por el ICFES. Los datos abarcan los 32 departamentos de Colombia y Bogotá, desde el segundo semestre de 2015 $(t=1)$ hasta el segundo semestre de 2023 $(t=9)$, permitiendo un análisis de tendencias en el desempeño académico en nueve períodos de observación. La prueba evalúa la preparación de estudiantes próximos a finalizar la educación media y es clave para el acceso a la educación superior.
+# **INTRODUCCIÓN**
 
-La sección de matemáticas mide competencias en razonamiento cuantitativo, resolución de problemas y análisis de datos, con puntajes entre 0 y 100, diseñados para tener un promedio teórico de 50 y una desviación estándar de 10. Los resultados son comparables entre cohortes gracias a procesos de validación psicométrica y el uso de la Teoría de Respuesta al Ítem (TRI). Esto garantiza que los puntajes reflejen con precisión las habilidades matemáticas, facilitando análisis educativos, diseño de políticas y mejora de la calidad educativa.
+En este trabajo se analiza el desempeño en la sección de matemáticas de la Prueba Saber 11, una evaluación estandarizada que mide competencias esenciales de estudiantes próximos a culminar la educación media en Colombia. El análisis se realiza bajo un enfoque bayesiano, utilizando datos recolectados entre el segundo semestre de 2015 y el segundo semestre de 2023, abarcando los 32 departamentos del país y Bogotá.  
 
-::: callout-note
-TOCA TENER EN CUENTA QUE LAS BASES DE DATOS QUE PROPORCIONO EL DOCENTE LES HACE FALTA LA PRIMERA COLUMNA (EL NOMBRE) Y ESTO HACE QUE LOS DATOS SALGAN CORRIDOS PARA SOLUCIONAR ESTO, SE INTRODUJO AL PRINCIPIO DEL DOCUMENTO .txt LA LINEA "INTRO"; Y DE ESTA FORMA PODER IMPORTAR DIRECTAMENTE ESTOS ARCHIVOS.
-:::
+El objetivo principal es modelar y comparar los resultados en matemáticas, estudiando patrones y tendencias que permitan identificar brechas en el aprendizaje, evaluar políticas educativas y proponer estrategias basadas en evidencia. Para ello, se emplea un modelo Bayesiano jerárquico que facilita la estimación de parámetros clave, el análisis de la evolución temporal y el agrupamiento de departamentos en función de sus características.  
+
+A través de simulaciones de Monte Carlo, se obtienen estimaciones de medias posteriores, intervalos de credibilidad y coeficientes de variación, junto con visualizaciones como mapas temáticos y diagramas de Sankey. Estos resultados permiten interpretar de manera integral la evolución del desempeño educativo en matemáticas y su impacto en la política educativa nacional.  
+
+
+# **EXPLIACIÓN DEL MODELO**
+
+El modelo utilizado para este análisis es un modelo Bayesiano jerárquico basado en una combinación de distribuciones **Normal** y **Gamma Inversa**, adecuado para casos donde tanto la media como la varianza de los datos son inciertas y tratadas como variables aleatorias. Este modelo aprovecha distribuciones previas conjugadas, lo que facilita la derivación de las distribuciones posteriores.  
+
+El modelo se define a través de las siguientes relaciones jerárquicas:  
+
+1. **Distribución muestral**  
+   Se supone que los puntajes de matemáticas $(y_i)$ siguen una distribución Normal con media $(\theta)$ y varianza $\sigma^2$:  
+   
+   $$
+   y_i \mid \theta, \sigma^2 \sim N(\theta, \sigma^2), \quad i = 1, \dots, n.
+   $$
+
+2. **Distribución previa de $\theta$ (media condicional en $\sigma^2$)**  
+   El parámetro $\theta$ tiene una distribución Normal con media $\mu_0$ y varianza $\sigma^2 / \kappa_0$:  
+   
+   $$
+   \theta \mid \sigma^2 \sim N\left(\mu_0, \frac{\sigma^2}{\kappa_0}\right),
+   $$
+   
+   donde $\kappa_0$ representa la precisión equivalente a un tamaño efectivo de observaciones previas.
+
+3. **Distribución previa de  $\sigma^2$ (varianza)**  
+   El parámetro $\sigma^2$ sigue una distribución Gamma Inversa con parámetros de forma $\nu_0 / 2$ y escala $(\nu_0 \sigma_0^2) / 2$:  
+   
+   $$
+   \sigma^2 \sim \text{GI}\left(\frac{\nu_0}{2}, \frac{\nu_0 \sigma_0^2}{2}\right),
+   $$
+   
+   donde $\nu_0$ refleja el tamaño efectivo de una muestra previa y $\sigma_0^2$ es la varianza previa.
+
+## **HIPERPARÁMETROS**
+
+Los valores iniciales utilizados en el modelo son:  
+-  $\mu_0 = 50$: Media previa basada en el puntaje promedio esperado de la prueba.  
+-  $\kappa_0 = 1$: Representa una precisión baja equivalente a una observación previa.  
+-  $\nu_0 = 1$: Número de grados de libertad, asociado a una muestra previa mínima.  
+-  $\sigma_0^2 = 10^2$: Varianza previa basada en la desviación estándar típica de la población evaluada.  
+
+## **SIMULACÓN Y AJUSTE DEL MODELO**
+
+El ajuste del modelo se realiza de manera independiente para cada departamento y período, utilizando simulación de Monte Carlo con $B = 10,000$ iteraciones. Esto permite obtener distribuciones posteriores para los parámetros $\theta$ (media) y $\sigma^2$ (varianza), asegurando resultados consistentes y reproducibles.  
+
+Este modelo permite capturar incertidumbre de manera explícita, proporcionando estimaciones robustas y visualmente interpretables, esenciales para comprender las dinámicas educativas en Colombia.  
+
+
+# **DESARROLLO DEL CASO**
 
 ```{r load_data, message=FALSE, warning=FALSE, include=FALSE}
 # Lista los archivos en el directorio
@@ -71,7 +123,52 @@ for (name in nombres_archivos) {
   }
 ```
 
-```{r verificacion, message=FALSE, warning=FALSE, include=FALSE}
-BD1 <- bases[[1]]
-head(BD1)
+## **1. Estimación de parámetros para Bogotá en 2023-2**
+   
+```{r child='Punto1.Rmd'}
 ```
+
+### **2. Ranking de los mejores departamentos en 2023-2**
+
+```{r child='Punto2.Rmd'}
+```
+
+### **3. Ranking de los peores departamentos en 2023-2**
+
+```{r child='Punto3.Rmd'}
+```
+
+### **4. Evolución temporal de Bogotá**
+   - Calcular las medias posteriores y los intervalos de credibilidad para Bogotá en cada período (t = 1 a 9).
+   - Generar visualizaciones que muestren la evolución de estos valores a través del tiempo.
+
+### **5. Coeficiente de variación en Bogotá**
+   - Repetir el análisis anterior, pero enfocado en el coeficiente de variación.
+   - Presentar los resultados de manera gráfica.
+
+### **6. Análisis de diferencias (ηt,k para Bogotá)**
+   - Calcular $ηt,k = θt − θt−k$ para todos los $k$ posibles en cada período.
+   - Reportar las medias posteriores y los intervalos de credibilidad en un gráfico que facilite su interpretación.
+
+### **7. Procedimiento de agrupamiento bayesiano**
+   - Implementar el procedimiento descrito usando simulación de Monte Carlo.
+   - Generar las matrices de similitud y aplicar clustering para cada período.
+   - Visualizar los resultados en mapas con un arreglo de $3×3$.
+
+### **8. Diagrama de Sankey**
+   - Utilizar los resultados de agrupamiento para crear un diagrama de Sankey que muestre la evolución de los grupos a lo largo del tiempo.
+
+### **9. Interpretación o Conclusiones del Análisis**
+   - Análisis detallado que explique los resultados, conectándolos con implicaciones educativas y estrategias pedagógicas.
+
+
+
+
+
+
+
+
+
+
+
+
