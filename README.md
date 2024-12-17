@@ -12,7 +12,7 @@ La idea de este repo es ir desarrollando la tematica de la asignatura y que este
 
 - **Casos de Estudio**
 
-     - [**Caso de Estudio 1**]() En Espera de la Entrega
+     - [**Caso de Estudio 1**](https://github.com/CapStats-ML/Estadistica_Bayesiana/tree/main/Caso1) A través de modelos bayesianos jerárquicos y simulaciones, este estudio modela y compara el desempeño en matemáticas de los estudiantes colombianos en las pruebas Saber 11. El objetivo es obtener una visión más precisa y detallada de las variaciones en el desempeño a lo largo del tiempo y entre diferentes regiones.
      - [**Caso de Estudio 2**]() En Espera de la Entrega
      - [**Caso de Estudio 3**]() En Espera de la Entrega
 
