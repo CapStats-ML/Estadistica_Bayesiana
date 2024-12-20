@@ -1,0 +1,119 @@
+El enunciado del 6to punto a desarrollar dice lo siguiente:  Considere el parámetro $\eta_{t,k} = \theta_t-\theta_{t-k}$, para algún $k=1,\ldots,t-1$. Para Bogotá, calcule la media posterior y el intervalo de credibilidad al 95\% de confianza para $\eta_{9,k}$, para cada $k=1,\ldots,8$. Presente los resultados mediante una visualización que muestre simultáneamente las medias posteriores y los intervalos de credibilidad.
+
+Con esto los paso a seguir son los siguientes:
+
+   - Calcular  $\eta_{t,k} = \theta_t-\theta_{t-k}$ para todos los $k$ posibles en cada período.
+   - Reportar las medias posteriores y los intervalos de credibilidad en un gráfico que facilite su interpretación.
+
+
+```{r}
+# Crear matriz para guardar los resultados
+theta_matrix <- matrix(NA, nrow = 10000, ncol = length(bases))
+
+# Iterar sobre las bases
+for (i in 1:length(bases)) {
+  dat <- bases[[i]]
+  dat <- as.data.frame(dat)
+  
+  resultados <- bayesian_analysis(dat, depto_res_col = "ESTU_COD_RESIDE_DEPTO",
+                                  depto_code = 11, score_col = "PUNT_MATEMATICAS",
+                                  save_samples = TRUE)
+  
+  theta_matrix[, i] <- resultados$muestras$theta
+}
+```
+
+
+```{r}
+# Obtener los 8 vectores de diferencias entre los Thetas con la columna 9 de la matriz fija 
+# Es decir, se hace la diferencia entre 9 y 1, 9 y 2, 9 y 3 ... etc 
+
+diferencias <- matrix(NA, nrow = 10000, ncol = 8)
+
+for (i in 1:8) {
+  diferencias[, i] <- theta_matrix[, 9] - theta_matrix[, i]
+}
+
+
+# Calcular la media posterior y el intervalo de credibilidad del 95% para cada vector en diferencias
+
+medias_post <- apply(diferencias, 2, mean)
+intervalos_cred1 <- apply(diferencias, 2, function(x) quantile(x, c(0.025, 0.975)))
+intervalos_cred2 <- apply(diferencias, 2, function(x) quantile(x, c(0.005, 0.995)))
+```
+
+
+```{r , fig.width=12, fig.height=10}
+# Plot
+
+par(mfrow = c(3, 3), mar = c(5, 4, 4, 4), bg = "white")
+
+for (i in 1:ncol(diferencias)) {  # Iterar sobre columnas de 'diferencias'
+  hist(diferencias[, i], breaks = 20, main = paste("Diferencia entre theta 9 y", i),
+       xlab = expression(paste("Estimación de ", theta[9] - theta[i])), ylab = "Densidad",
+       xlim = c(min(diferencias[, i]) - 0.1, max(diferencias[, i]) + 0.1), family = "sans", 
+       font.lab = 1, cex.lab = 0.8, font = 2, font.main = 2, cex.axis = 0.7, cex.main = 1.2,
+       cex = 1, col.main = 'black', col = alpha('#6497b1', 1),  fg = alpha('grey20', 1), col.axis = 'grey20', border = '#b3cde0')
+  
+  abline(v = mean(diferencias[, i]), col = "#ff0000", lwd = 1.2)
+  abline(v = quantile(diferencias[, i], probs = c(0.025, 0.975)), col = "grey5",
+         lwd = 1.2, lty = 2)
+}
+
+par(mar = c(0, 0, 0, 0))  # Márgenes mínimos
+plot(1, type = "n", axes = FALSE, xlab = "", ylab = "")
+legend("center", legend = c("Media", "IC 95%"), col = c("#ff0000", "grey5"),
+       lty = c(1, 2), lwd = 1.2, cex = 1.5, box.col = NA)
+
+```
+
+
+```{r}
+# Crear tabla con los resultados
+
+resultados_finales <- data.frame( Estimacion = medias_post, cred_inf= intervalos_cred1[1, ],
+                                  cred_sup = intervalos_cred1[2, ], cred_inf= intervalos_cred2[1, ],
+                                  cred_sup = intervalos_cred2[2, ])
+
+colnames(resultados_finales) <- c("Estimación","Q2.5%","Q97.5%","Q0.5%","Q99.5%")
+rownames(resultados_finales) <- c(2015:2022)
+
+# Kable 
+
+knitr::kable(resultados_finales, digits = 3, align = "c", 
+             caption = "Inferencia Bayesiana Sobre las diferencias")
+```
+
+```{r}
+par(mfrow = c(1, 1), mar = c(5, 5, 4, 3), bg = "white")
+
+plot(x = 1:nrow(resultados_finales), y = resultados_finales[,1], ylim = c(-3,3),
+     main = "DIFERENCIAS ENTRE LOS PUTNAJES EN LA PRUEBA DE MATEMATICAS", pch = 16,
+     cex.main = 1, font.main = 2, xaxt = "n",  xlab = "AÑO DE LA COMPARACION",
+     ylab = expression(paste("DIFERENCIA  ",theta[9]-theta[i])), cex.lab = 0.8)
+
+lines(x = 1:nrow(resultados_finales), y = resultados_finales[,1], type = "l", lwd = 1.2, col = 4)
+
+abline(h = 0, col = 1, lty = 2)
+abline(v = 1:nrow(resultados_finales), col = "gray95")
+
+segments(x0 = 1:nrow(resultados_finales), y0 = resultados_finales[,2],
+         x1 = 1:nrow(resultados_finales), y1 = resultados_finales[,3], lwd = 3)
+
+segments(x0 = 1:nrow(resultados_finales), y0 = resultados_finales[,4], 
+         x1 = 1:nrow(resultados_finales), y1 = resultados_finales[,5], lwd = 1)
+
+axis(side = 1, at = 1:nrow(resultados_finales),
+     labels = rownames(resultados_finales), las = 1, cex = 0.8, col = "gray20")
+
+mtext("COMPARACIÓN ENTRE PERIODOS DE LA PRUEBA EN BOGOTÁ", side = 3,
+      line = 0.5, cex = 0.8, col = "grey20", font = 2)
+
+```
+
+
+
+
+
+
+

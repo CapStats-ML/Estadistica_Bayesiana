@@ -17,11 +17,13 @@ for (i in 1:length(bases)) {
                                   save_samples = FALSE)
 }
 
-tablas <- lapply(resultados, function(x) x$resultados);tablas
+tablas <- lapply(resultados, function(x) x$resultados)
 ```
 
 
 Luego la visualización de estos resultados estaría dada de la siguiente manera 
+
+
 
 ```{r}
 tablas_procesadas <- lapply(tablas, procesar_kable)
@@ -29,18 +31,15 @@ tablas_procesadas <- lapply(tablas, procesar_kable)
 # Extraer los datos necesarios
 años <- 2015:2023
 
-```
-
-```{r}
-cv <- numeric(length(tablas_procesadas))
-
+Cvar <- numeric(length(tablas_procesadas))
 for (i in 1:length(tablas_procesadas)) {
-  cv[i] <- as.numeric(tablas_procesadas[[i]]$` Estimación `[3])
+  Cvar[i] <- as.numeric(tablas_procesadas[[i]]$` Estimación `[3])
 }
 
-```
-
-```{r}
+cv <- numeric(length(tablas_procesadas))
+for (i in 1:length(tablas_procesadas)) {
+  cv[i] <- as.numeric(tablas_procesadas[[i]]$`  CV   `[3])
+}
 
 ic_inf <- numeric(length(tablas_procesadas))
 for (i in 1:length(tablas_procesadas)) {
@@ -52,15 +51,25 @@ for (i in 1:length(tablas_procesadas)) {
   ic_sup[i] <- as.numeric(tablas_procesadas[[i]]$` L. Sup. `[3])
 }
 
+
+# Verificar los datos
+X <- data.frame(Theta = Cvar, CV = cv, IC_Inf = ic_inf, IC_Sup = ic_sup)
+
+colnames(X) <- c("Estimación", "Coef Var" , "Q2.5%","Q97.5%")
+rownames(X) <- c(2015:2023)
+
+
+knitr::kable(X, digits = 3, align = "c", 
+             caption = "Inferencia Bayesiana en todos los periodos para Bogotá")
 ```
 
 
 
 ```{r}
 # Definir colores en función del valor de Theta (personalizable)
-colores <- rep("black", length(theta))
-colores[cv < 0.19] <- "red" # Ejemplo: rojo si Theta < 50
-colores[cv > 0.21] <- "royalblue"
+colores <- rep("black", length(Cvar))
+colores[Cvar < 0.19] <- "royalblue" # Ejemplo: rojo si Theta < 50
+colores[Cvar > 0.21] <- "red"
 
 par(mfrow = c(1, 1), mar = c(5, 5, 4, 4), bg = "white")
 
@@ -82,13 +91,13 @@ plot(
 axis(side = 2, at = años, labels = años, las = 2, cex.axis = 0.7, col = "grey20")
 
 # Líneas de referencia
-abline(v = 50, col = "gray", lwd = 3)
+abline(v = 0.2, col = "gray", lwd = 2)
 abline(h = años, col = "lightgray", lwd = 1)
 
 # Dibujar los intervalos de confianza y los puntos
 for (i in seq_along(años)) {
   segments(x0 = ic_inf[i], y0 = años[i], x1 = ic_sup[i], y1 = años[i], col = colores[i])
-  points(cv[i], años[i], pch = 16, cex = 0.8, col = colores[i])
+  points(Cvar[i], años[i], pch = 16, cex = 0.8, col = colores[i])
 }
 
 # Agregar título al gráfico

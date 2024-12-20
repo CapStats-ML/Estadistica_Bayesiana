@@ -24,7 +24,7 @@ resultados <- bayesian_analysis(dat, depto_res_col = "ESTU_COD_RESIDE_DEPTO", de
 
 # Ver resultados
 tabla_resultados <- resultados$resultados
-print(tabla_resultados)
+tabla_resultados
 ```
 
 

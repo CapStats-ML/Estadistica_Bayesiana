@@ -1,6 +1,7 @@
 bayesian_analysis <- function(dat, depto_res_col, depto_code, score_col, 
                               mu0 = 50, k0 = 1, s20 = 10^2, nu0 = 1, 
                               B = 10000, seed = 1234, save_samples = FALSE) {
+  
   # Filtrar los datos para el departamento
   depto_data <- dat[dat[[depto_res_col]] == depto_code, score_col]
   

@@ -17,7 +17,7 @@ for (i in 1:length(bases)) {
                                   save_samples = FALSE)
 }
 
-tablas <- lapply(resultados, function(x) x$resultados);tablas
+tablas <- lapply(resultados, function(x) x$resultados)
 ```
 
 
@@ -34,6 +34,11 @@ for (i in 1:length(tablas_procesadas)) {
   theta[i] <- as.numeric(tablas_procesadas[[i]]$` Estimación `[1])
 }
 
+cv <- numeric(length(tablas_procesadas))
+for (i in 1:length(tablas_procesadas)) {
+  cv[i] <- as.numeric(tablas_procesadas[[i]]$`  CV   `[1])
+}
+
 ic_inf <- numeric(length(tablas_procesadas))
 for (i in 1:length(tablas_procesadas)) {
   ic_inf[i] <- as.numeric(tablas_procesadas[[i]]$` L. Inf. `[1])
@@ -46,7 +51,14 @@ for (i in 1:length(tablas_procesadas)) {
 
 
 # Verificar los datos
-#data.frame(Año = años, Theta = theta, IC_Inf = ic_inf, IC_Sup = ic_sup)
+X <- data.frame(Theta = theta, CV = cv, IC_Inf = ic_inf, IC_Sup = ic_sup)
+
+colnames(X) <- c("Estimación", "Coef Var" , "Q2.5%","Q97.5%")
+rownames(X) <- c(2015:2023)
+
+
+knitr::kable(X, digits = 3, align = "c", 
+             caption = "Inferencia Bayesiana en todos los periodos para Bogotá")
 ```
 
 

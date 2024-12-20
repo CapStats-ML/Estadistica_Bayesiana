@@ -36,7 +36,7 @@ knitr::opts_chunk$set(
 ```
 
 ```{r setwd, message=FALSE, warning=FALSE, include=FALSE}
-setwd("~/REPOS GIT/Estadistica_Bayesiana/Caso1")
+setwd("~/REPOS GIT/Estadistica_Bayesiana/Caso1") # Establece el directorio de trabajo
 ```
 
 ```{r libraries, message=FALSE, warning=FALSE, include=FALSE}
@@ -162,8 +162,9 @@ for (name in names(bases)) {
 ```
 
 ### **6. Análisis de diferencias (ηt,k para Bogotá)**
-   - Calcular $ηt,k = θt − θt−k$ para todos los $k$ posibles en cada período.
-   - Reportar las medias posteriores y los intervalos de credibilidad en un gráfico que facilite su interpretación.
+
+```{r child='Punto6.Rmd'}
+```
 
 ### **7. Procedimiento de agrupamiento bayesiano**
    - Implementar el procedimiento descrito usando simulación de Monte Carlo.
