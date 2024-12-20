@@ -13,7 +13,9 @@ bayesian_analysis <- function(dat, depto_res_col, depto_code, score_col,
   
   # Estadísticos suficientes
   yb <- mean(depto_data)
-  s2 <- var(depto_data)
+  
+  # Estimación de la varianza, si n = 1 entonces s2 = 0 por definición y se debe ajustar
+  s2 <- if (n == 1) 0 else var(depto_data)
   
   # Hiperparámetros actualizados
   kn <- k0 + n
@@ -23,6 +25,7 @@ bayesian_analysis <- function(dat, depto_res_col, depto_code, score_col,
   
   # Muestras de la distribución posterior
   set.seed(seed)
+  
   sigma2 <- 1 / rgamma(n = B, shape = nun / 2, rate = nun * s2n / 2)
   theta <- rnorm(n = B, mean = mun, sd = sqrt(sigma2 / kn))
   

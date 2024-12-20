@@ -46,8 +46,10 @@ library(tidyr)
 library(RColorBrewer)
 library(kableExtra)
 library(ggplot2)
+library(mclust)
 library(reshape2)
 library(cowplot)
+library(corrplot)
 
 source("Funciones.R")
 ```
@@ -167,12 +169,12 @@ for (name in names(bases)) {
 ```
 
 ### **7. Procedimiento de agrupamiento bayesiano**
-   - Implementar el procedimiento descrito usando simulación de Monte Carlo.
-   - Generar las matrices de similitud y aplicar clustering para cada período.
-   - Visualizar los resultados en mapas con un arreglo de $3×3$.
+
+```{r child='Punto7.Rmd'}
+```
 
 ### **8. Diagrama de Sankey**
-   - Utilizar los resultados de agrupamiento para crear un diagrama de Sankey que muestre la evolución de los grupos a lo largo del tiempo.
+   
 
 ### **9. Interpretación o Conclusiones del Análisis**
    - Análisis detallado que explique los resultados, conectándolos con implicaciones educativas y estrategias pedagógicas.

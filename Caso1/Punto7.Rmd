@@ -1,0 +1,318 @@
+El enunciado del 7mo punto a desarrollar dice lo siguiente: Para todos los períodos ($t=1, \ldots, 9$), aplique el procedimiento descrito previamente para obtener una segmentación de los 33 departamentos. Para cada período, presentar los resultados mediante un mapa de Colombia, utilizando una escala de colores adecuada en la que los departamentos que pertenezcan al mismo grupo se representen con el mismo color. La visualización debe consistir de 9 paneles dispuestos en un arreglo de $3 \times 3$, todos en una misma página, para facilitar la comparación entre períodos.
+
+Con esto los paso a seguir son los siguientes:
+
+   - Implementar el procedimiento descrito usando simulación de Monte Carlo.
+   - Generar las matrices de similitud y aplicar clustering para cada período.
+   - Visualizar los resultados en mapas con un arreglo de $3×3$.
+
+
+```{r eval=FALSE, include=FALSE}
+# Número de iteraciones para el análisis bayesiano
+B <- 10000
+
+# Número de clusters para k-means
+num_clusters <- 3
+
+# Crear listas para almacenar resultados
+omega_results <- vector("list", length(bases))          # Para guardar las matrices Omega de cada base
+cluster_labels_list <- vector("list", length(bases))    # Para guardar etiquetas de cluster
+similarity_matrices <- vector("list", length(bases))    # Para guardar las matrices de similitud
+
+# Iterar sobre cada base de datos
+for (i in seq_along(bases)) {
+  cat(sprintf("Iniciando análisis para la base %d...\n", i))
+  
+  # Seleccionar la base actual y convertirla en data frame
+  dat <- as.data.frame(bases[[i]])
+  
+  # Lista de códigos de departamentos
+  deptos <- unique(dat$ESTU_COD_RESIDE_DEPTO)
+  deptos <- deptos[!is.na(deptos)]
+  
+  # Inicializar matrices para Omega^(b)
+  omega_matrices <- vector("list", B)
+  template_matrix <- matrix(NA, nrow = length(deptos), ncol = 2)
+  rownames(template_matrix) <- as.character(deptos)
+  colnames(template_matrix) <- c("Theta", "Sigma")
+  
+  # Progreso (10%)
+  progress_step <- floor(B / 10)
+  
+  # Construir Omega^(b)
+  for (b in 1:B) {
+    if (b %% progress_step == 0) {
+      cat(sprintf("Base %d - Progreso: %d%% completado\n", i, (b / B) * 100))
+    }
+    
+    # Crear matriz temporal
+    omega_b <- template_matrix
+    
+    for (depto in deptos) {
+      result <- bayesian_analysis(dat, depto_res_col = "ESTU_COD_RESIDE_DEPTO",
+                                  depto_code = depto, score_col = "PUNT_MATEMATICAS", 
+                                  save_samples = TRUE, B = B)
+      theta_samples <- result$muestras$theta
+      sigma_samples <- sqrt(result$muestras$sigma2)
+      
+      if (length(theta_samples) < B | length(sigma_samples) < B) {
+        next
+      }
+      
+      omega_b[as.character(depto), "Theta"] <- theta_samples[b]
+      omega_b[as.character(depto), "Sigma"] <- sigma_samples[b]
+    }
+    
+    omega_matrices[[b]] <- omega_b
+  }
+  
+  # Guardar las matrices Omega
+  omega_results[[i]] <- omega_matrices
+  
+  # Aplicar k-means y calcular etiquetas de clusters
+  cluster_labels <- matrix(NA, nrow = length(deptos), ncol = B)
+  for (b in 1:B) {
+    omega_b <- omega_matrices[[b]]
+    if (any(is.na(omega_b))) {
+      next
+    }
+    kmeans_result <- kmeans(omega_b, centers = num_clusters)
+    cluster_labels[, b] <- kmeans_result$cluster
+  }
+  rownames(cluster_labels) <- as.character(deptos)
+  cluster_labels_list[[i]] <- cluster_labels
+  
+  # Construir matriz de similitudes
+  m <- length(deptos)
+  similarity_matrix <- matrix(0, nrow = m, ncol = m)
+  rownames(similarity_matrix) <- colnames(similarity_matrix) <- as.character(deptos)
+  for (b in 1:B) {
+    clusters_b <- cluster_labels[, b]
+    for (j in 1:m) {
+      for (k in 1:m) {
+        if (clusters_b[j] == clusters_b[k]) {
+          similarity_matrix[j, k] <- similarity_matrix[j, k] + 1
+        }
+      }
+    }
+  }
+  similarity_matrix <- similarity_matrix / B
+  similarity_matrices[[i]] <- similarity_matrix
+  
+  cat(sprintf("Análisis para la base %d completado.\n", i))
+}
+
+```
+
+```{r eval=FALSE, include=FALSE}
+# Guardar los resultados en archivos
+saveRDS(omega_results, "omega_results.rds")
+saveRDS(cluster_labels_list, "cluster_labels_list.rds")
+saveRDS(similarity_matrices, "similarity_matrices.rds")
+```
+
+```{r}
+ome <- readRDS("omega_results.rds")
+clus <- readRDS("cluster_labels_list.rds")
+simi <- readRDS("similarity_matrices.rds")
+```
+
+De manera ilustrativa se muestra el plot de una de las matrices y se hace la agrupación jerárquica y kmeans para tener una idea de cómo se pueden agrupar los departamentos.
+
+```{r}
+Y <- as.data.frame(ome[[1]][2])
+
+par(mfrow = c(1, 1), mar = c(5, 4, 4, 4), bg = "white")
+
+plot(Y[,1], Y[,2], xlab = expression(theta),
+     ylab = expression(sigma), main = "GRAFICO DE DISPERSIÓN PARA OMEGA 1",
+     pch = 19, family = "sans", font.lab = 1, cex.lab = 0.9, font = 2, font.main = 2,
+     cex.axis = 0.7, cex.main = 1, cex = 1, col.main = 'black', col = alpha('#ff9818', 1),
+     fg = alpha('grey20', 1), col.axis = 'grey20')
+
+mtext("IDENTIFICACION DE GRUPOS EN LOS DEPARTAMENTOS", side = 3, line = 0.5,
+      cex = 0.8, col = "grey20", font = 2)
+
+```
+
+Se hace el agrupamiento jerarquico con el fin de identificar el número de clusters que se pueden formar.
+
+```{r}
+# Calcular la distancia 
+
+dist_matrix <- dist(Y)
+hc_result <- hclust(dist_matrix, method = "ward.D2")
+
+par(mfrow = c(1, 1), mar = c(5, 4, 4, 4), bg = "white")
+
+plot(hc_result, main = "DENDOGRAMA: AGRUPAMIENTO JERARQUICO", ylab = "DISTANCIA",
+     xlab = " ", family = "sans", font.lab = 1, cex.lab = 0.9, font = 2, hang = -1,
+     font.main = 2, cex.axis = 0.7, cex.main = 1, cex = 1, col.main = 'black',
+     col = alpha('black', 1), fg = alpha('grey20', 1), col.axis = 'grey20')
+abline(h = 10, col = "#ff9818", lty = 2)
+
+mtext("METODO DE ELECCIÓN PARA EL NUMERO DE CLUSTERS", side = 3, line = 0.5,
+      cex = 0.8, col = "grey20", font = 2)
+
+```
+
+Ahora teniendo en cuenta el numero de clusters que se pueden formar se procede a hacer el agrupamiento con el metodo de kmeans.
+
+```{r}
+kmeans_result <- kmeans(Y, centers = 3, nstart = 1, algorithm = "MacQueen")
+
+par(mfrow = c(1, 1), mar = c(5, 4, 4, 4), bg = "white")
+
+plot(Y[, 1], Y[, 2], col = kmeans_result$cluster, pch = 19,
+     main = "AGRUPAMIENTO USANDO KMEAN CON 3 GRUPOS",
+     xlab = expression(theta), ylab = expression(sigma),
+     family = "sans", font.lab = 1, cex.lab = 0.9, font = 2,
+     font.main = 2, cex.axis = 0.7, cex.main = 1, cex = 1,
+     col.main = 'black', fg = alpha('grey20', 1), col.axis = 'grey20')
+
+
+points(kmeans_result$centers, col = 1:3, pch = 4, cex = 1, lwd = 1) 
+
+mtext("IDENTIFICACION DE GRUPOS EN LOS DEPARTAMENTOS", side = 3, line = 0.5,
+      cex = 0.8, col = "grey20", font = 2)
+
+```
+
+
+Una vez agrupados con el metodo de kmeans se procede a obtener la matriz de similitud y graficarla mediante un heatmap 
+
+```{r, fig.width=6, fig.height=6}
+simi_mat <- simi[[1]]
+
+par(mfrow = c(1, 1), mar = c(5, 4, 4, 4), bg = "white")
+
+corrplot(simi_mat, tl.pos = "n", tl.col = "black", cl.cex = 0.8, order = "original",  
+         method = "color", col = colorRampPalette(c('#ff9818',"#6a0d83"))(200), cex.main = 1.1,
+         title = "MATRIZ DE SIMILITUDES EN EL TIEMPO 1", mar = c(0,0,2,0))  
+
+mtext("PROBABILIDAD DE PERTENCIA AL MISMO GRUPO", side = 3, line = 1.6, cex = 0.8,
+      col = "grey20", font = 2)
+```
+
+
+De esta forma es que se procedio con los datos generados por el codigo, entonces ahora generaremos un grafico donde se muestren las 9 matrices en similitud en el tiempo. 
+
+```{r, fig.width=10, fig.height=10}
+par(mfrow = c(3, 3), mar = c(5, 4, 4, 4), bg = "white")
+
+for (i in 1:9) {
+  simi_mat <- simi[[i]] # Extraer la matriz de similitud
+  
+  corrplot(simi_mat, 
+           tl.pos = "n",               # Ocultar etiquetas de las filas/columnas
+           cl.pos = "n",               # Ocultar barra de colores
+           tl.col = "black",           # Color de etiquetas
+           order = "original",         # Orden de las variables en la matriz
+           method = "color",           # Representación mediante colores
+           col = colorRampPalette(c('#ff9818', "#6a0d83"))(200), # Colores
+           title = paste("MATRIZ DE SIMILITUDES EN EL TIEMPO", i), 
+           mar = c(0, 0, 2, 0),        # Márgenes personalizados
+           cex.main = 1)             # Tamaño del título
+  
+  # Subtítulo adicional
+  mtext("PROB DE PERTENECER AL MISMO GRUPO", 
+        side = 3, line = 1.6, cex = 0.6, col = "grey20", font = 2)
+}
+
+```
+
+Por ultimo, utilizando las matrices de similitudes como entrada de la funcion Mclust, de la libreria `mclust` se genera la segmentacion final (Estimacion puntual) teniendo en cuenta las probabilidades contenidas en la matriz de similitud.
+
+
+```{r}
+models <- lapply(simi, Mclust)
+```
+
+```{r}
+# Extraer métricas clave de cada modelo
+metrics <- lapply(models, function(model) {
+  list(
+    num_clusters = model$G,  # Número de clústeres
+    best_bic = max(model$bic),  # Mejor valor de BIC
+    model_name = model$modelName  # Nombre del modelo elegido
+  )
+})
+
+# Convertir las métricas en un data frame
+metrics_df <- do.call(rbind, lapply(seq_along(metrics), function(i) {
+  cbind(matrix_id = i, as.data.frame(metrics[[i]]))
+}))
+
+# Convertir a un formato de tabla legible con `kable`
+kable(metrics_df, col.names = c("Matriz ID", "Num Clústers", "Mejor BIC", "Modelo"), 
+      caption = "Métricas de Modelos Mclust por Matriz de Similitudes",
+      digits = 2, align = "c")
+
+``` 
+Así tenemos que puede haber un maximo de 9 clusters, y el año con mejor ajuste segun el BIC es el año 9 con 5 clusters y utilizando el modelo VVI, el cual indica que el mejor modelo es el de varianza igual y forma de covarianza variable.
+
+```{r}
+
+l <- list()
+
+for (i in 1:9) {
+  temp <- as.data.frame(models[[i]]$classification)  # Convertir a data.frame
+  temp$dpto_ccdgo <- rownames(temp)                  # Añadir los nombres como una columna
+  rownames(temp) <- NULL                             # Reiniciar los nombres de las filas
+  names(temp) <- c("Cluster", "dpto_ccdgo")          # Renombrar las columnas)
+  temp$dpto_ccdgo <- ifelse(nchar(temp$dpto_ccdgo) == 1, paste0("0", temp$dpto_ccdgo), temp$dpto_ccdgo)
+  temp$dpto_ccdgo <- as.character(temp$dpto_ccdgo)
+  l[[i]] <- temp                                     # Guardar en la lista
+}
+
+```
+
+
+
+
+```{r, fig.width=10, fig.height=10}
+Colores = c('#d4a243', '#f78a7d', '#f75e57', '#d76ba3', '#b97ac9', '#735bb2', '#4a377e', '#842a54', '#b5573f')
+
+# Iterar sobre cada data.frame en la lista 'l'
+mapas <- list()
+
+for (i in 1:length(l)) {
+  # Hacer un join con el shapefile
+  map_data <- shp %>%
+    left_join(l[[i]], by = "dpto_ccdgo")
+  
+  # Crear el mapa para este modelo
+  mapa <- ggplot(data = map_data) +
+    geom_sf(aes(fill = factor(Cluster)), color = "white", size = 0.2) +
+    scale_fill_manual(values = Colores, name = "Clúster") + # Usar los colores personalizados
+    ggtitle(label = paste("MAPA DE COLOMBIA: MCLUST TIEMPO", i),
+            subtitle = "CLUSTERS DE DEPARTAMENTOS POR KMEANS-MCLUST") +
+    theme_minimal() +
+    theme(
+      plot.title = element_text(size = 9, face = "bold", hjust = 0.5),
+      plot.subtitle = element_text(size = 7, face = "bold", hjust = 0.5, color = "grey40"),
+      axis.text = element_blank(),       # Eliminar texto de los ejes
+      axis.ticks = element_blank(),      # Eliminar marcas de los ejes
+      panel.grid = element_blank(),       # Eliminar cuadrícula
+      legend.title = element_text(size = 9),  # Reducir tamaño del título de la leyenda
+      legend.text = element_text(size = 7),    # Reducir tamaño del texto de la leyenda
+      legend.key.size = unit(0.5, 'cm')
+    )
+  
+  # Guardar el mapa en la lista
+  mapas[[i]] <- mapa
+}
+
+# Mostrar todos los mapas
+library(gridExtra)
+do.call(grid.arrange, mapas)
+
+```
+
+
+
+
+
+
+
+
