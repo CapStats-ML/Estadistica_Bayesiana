@@ -50,8 +50,10 @@ library(mclust)
 library(reshape2)
 library(cowplot)
 library(corrplot)
+library(circlize)
 
-source("Funciones.R")
+
+source("Source/Funciones.R")
 ```
 
 
@@ -140,41 +142,43 @@ for (name in names(bases)) {
 
 ## **1. Estimación de parámetros para Bogotá en 2023-2**
    
-```{r child='Punto1.Rmd'}
+```{r child='Source/Punto1.Rmd'}
 ```
 
 ### **2. Ranking de los mejores departamentos en 2023-2**
 
-```{r child='Punto2.Rmd'}
+```{r child='Source/Punto2.Rmd'}
 ```
 
 ### **3. Ranking de los peores departamentos en 2023-2**
 
-```{r child='Punto3.Rmd'}
+```{r child='Source/Punto3.Rmd'}
 ```
 
 ### **4. Evolución temporal de Bogotá**
 
-```{r child='Punto4.Rmd'}
+```{r child='Source/Punto4.Rmd'}
 ```
 
 ### **5. Coeficiente de variación en Bogotá**
 
-```{r child='Punto5.Rmd'}
+```{r child='Source/Punto5.Rmd'}
 ```
 
 ### **6. Análisis de diferencias (ηt,k para Bogotá)**
 
-```{r child='Punto6.Rmd'}
+```{r child='Source/Punto6.Rmd'}
 ```
 
 ### **7. Procedimiento de agrupamiento bayesiano**
 
-```{r child='Punto7.Rmd'}
+```{r child='Source/Punto7.Rmd'}
 ```
 
 ### **8. Diagrama de Sankey**
    
+```{r child='Source/Punto8.Rmd'}
+```
 
 ### **9. Interpretación o Conclusiones del Análisis**
    - Análisis detallado que explique los resultados, conectándolos con implicaciones educativas y estrategias pedagógicas.

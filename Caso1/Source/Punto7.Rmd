@@ -223,9 +223,12 @@ for (i in 1:9) {
 
 Por ultimo, utilizando las matrices de similitudes como entrada de la funcion Mclust, de la libreria `mclust` se genera la segmentacion final (Estimacion puntual) teniendo en cuenta las probabilidades contenidas en la matriz de similitud.
 
+Haciendo una primera prueba sobre $t=9$ o el periodo de 2023 se pudo encontrar que el numero optimo de clusters obtenido fueron 5 y el modelo que mejor se ajusta es el VVI, por lo tanto para mantener una consistencia dentro de los periodos se procede a realizar el mismo procedimiento para los demas periodos teniendo en cuenta para todos el mismo numero de clusters, esto tambien nos ayudara a mejorar las visulizaciones en los mapas y en el diagrama de Sankey más adelante.
+
 
 ```{r}
-models <- lapply(simi, Mclust)
+models <- lapply(simi, function(x) Mclust(x, G = 5))
+
 ```
 
 ```{r}
@@ -271,7 +274,7 @@ for (i in 1:9) {
 
 
 ```{r, fig.width=10, fig.height=10}
-Colores = c('#d4a243', '#f78a7d', '#f75e57', '#d76ba3', '#b97ac9', '#735bb2', '#4a377e', '#842a54', '#b5573f')
+Colores = c('#d4a243', '#f75e57', '#d76ba3', '#b97ac9',  '#4a377e')
 
 # Iterar sobre cada data.frame en la lista 'l'
 mapas <- list()
