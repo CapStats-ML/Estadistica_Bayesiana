@@ -20,7 +20,7 @@ El objetivo principal es modelar y comparar los resultados en matemáticas, estu
          <ul>
             <li>Tecnologías: <em>R, RStudio, Markdown, HTML, ggplot2</em></li>
             <li><a href="https://github.com/CapStats-ML/Estadistica_Bayesiana/tree/main/Caso1">Enlace a la carpeta repositorio</a></li>
-            <li><a href="https://github.com/CapStats-ML/Estadistica_Bayesiana/tree/main/Caso1">Enlace a al HTML en Rpubs</a></li>
+            <li><a href="https://rpubs.com/CapStats/Caso1-EstBayes">Enlace a al HTML en Rpubs</a></li>
          </ul>
       </li>
       <li><strong>Caso de Estudio 2</strong> - 
