@@ -125,12 +125,12 @@ Y <- as.data.frame(ome[[1]][2])
 par(mfrow = c(1, 1), mar = c(5, 4, 4, 4), bg = "white")
 
 plot(Y[,1], Y[,2], xlab = expression(theta),
-     ylab = expression(sigma), main = "GRAFICO DE DISPERSIÓN PARA OMEGA 1",
+     ylab = expression(sigma), main = "GRÁFICO DE DISPERSIÓN PARA OMEGA 1",
      pch = 19, family = "sans", font.lab = 1, cex.lab = 0.9, font = 2, font.main = 2,
      cex.axis = 0.7, cex.main = 1, cex = 1, col.main = 'black', col = alpha('#ff9818', 1),
      fg = alpha('grey20', 1), col.axis = 'grey20')
 
-mtext("IDENTIFICACION DE GRUPOS EN LOS DEPARTAMENTOS", side = 3, line = 0.5,
+mtext("IDENTIFICACIÓN DE GRUPOS EN LOS DEPARTAMENTOS", side = 3, line = 0.5,
       cex = 0.8, col = "grey20", font = 2)
 
 ```
@@ -145,13 +145,13 @@ hc_result <- hclust(dist_matrix, method = "ward.D2")
 
 par(mfrow = c(1, 1), mar = c(5, 4, 4, 4), bg = "white")
 
-plot(hc_result, main = "DENDOGRAMA: AGRUPAMIENTO JERARQUICO", ylab = "DISTANCIA",
+plot(hc_result, main = "DENDOGRAMA: AGRUPAMIENTO JERÁRQUICO", ylab = "DISTANCIA",
      xlab = " ", family = "sans", font.lab = 1, cex.lab = 0.9, font = 2, hang = -1,
      font.main = 2, cex.axis = 0.7, cex.main = 1, cex = 1, col.main = 'black',
      col = alpha('black', 1), fg = alpha('grey20', 1), col.axis = 'grey20')
 abline(h = 10, col = "#ff9818", lty = 2)
 
-mtext("METODO DE ELECCIÓN PARA EL NUMERO DE CLUSTERS", side = 3, line = 0.5,
+mtext("MÉTODO DE ELECCIÓN PARA EL NÚMERO DE CLUSTERS", side = 3, line = 0.5,
       cex = 0.8, col = "grey20", font = 2)
 
 ```
@@ -173,7 +173,7 @@ plot(Y[, 1], Y[, 2], col = kmeans_result$cluster, pch = 19,
 
 points(kmeans_result$centers, col = 1:3, pch = 4, cex = 1, lwd = 1) 
 
-mtext("IDENTIFICACION DE GRUPOS EN LOS DEPARTAMENTOS", side = 3, line = 0.5,
+mtext("IDENTIFICACIÓN DE GRUPOS EN LOS DEPARTAMENTOS", side = 3, line = 0.5,
       cex = 0.8, col = "grey20", font = 2)
 
 ```

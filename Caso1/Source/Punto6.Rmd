@@ -46,10 +46,12 @@ intervalos_cred2 <- apply(diferencias, 2, function(x) quantile(x, c(0.005, 0.995
 ```{r , fig.width=12, fig.height=10}
 # Plot
 
+años <- 2015:2022
+
 par(mfrow = c(3, 3), mar = c(5, 4, 4, 4), bg = "white")
 
 for (i in 1:ncol(diferencias)) {  # Iterar sobre columnas de 'diferencias'
-  hist(diferencias[, i], breaks = 20, main = paste("Diferencia entre theta 9 y", i),
+  hist(diferencias[, i], breaks = 20, main = paste("Diferencia entre periodo 2023 y", años[i]),
        xlab = expression(paste("Estimación de ", theta[9] - theta[i])), ylab = "Densidad",
        xlim = c(min(diferencias[, i]) - 0.1, max(diferencias[, i]) + 0.1), family = "sans", 
        font.lab = 1, cex.lab = 0.8, font = 2, font.main = 2, cex.axis = 0.7, cex.main = 1.2,
@@ -88,7 +90,7 @@ knitr::kable(resultados_finales, digits = 3, align = "c",
 par(mfrow = c(1, 1), mar = c(5, 5, 4, 3), bg = "white")
 
 plot(x = 1:nrow(resultados_finales), y = resultados_finales[,1], ylim = c(-3,3),
-     main = "DIFERENCIAS ENTRE LOS PUTNAJES EN LA PRUEBA DE MATEMATICAS", pch = 16,
+     main = "DIFERENCIAS ENTRE LOS PUNTAJES EN LA PRUEBA DE MATEMÁTICAS", pch = 16,
      cex.main = 1, font.main = 2, xaxt = "n",  xlab = "AÑO DE LA COMPARACION",
      ylab = expression(paste("DIFERENCIA  ",theta[9]-theta[i])), cex.lab = 0.8)
 

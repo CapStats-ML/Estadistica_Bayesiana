@@ -102,12 +102,12 @@ procesar_kable <- function(tabla_kable) {
 
 
 # Función para crear mapas individuales
-create_map <- function(data, year, titulo = "MAPA DE BOGOTÁ", subtitulo = "PROM EN MATEMÁTICAS PARA BOGOTÁ") {
+create_map <- function(data, year, name = "THETA", titulo = "MAPA DE BOGOTÁ", subtitulo = "PROM EN MATEMÁTICAS PARA BOGOTÁ") {
   ggplot(data = data) +
     geom_sf(aes(fill = Theta), color = "white", size = 0.2) +
     scale_fill_gradient2(
       low = "#ff9818", mid = "#dc5858", high = "#6a0d83", 
-      midpoint = mean(theta), name = "THETA", limits = c(min_theta, max_theta) # Escala global de Theta
+      midpoint = mean(theta), name = name, limits = c(min_theta, max_theta) # Escala global de Theta
     ) +
     ggtitle(label = paste(titulo, year),
             subtitle = subtitulo ) +

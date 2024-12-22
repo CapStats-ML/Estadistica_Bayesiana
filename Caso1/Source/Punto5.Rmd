@@ -80,7 +80,7 @@ plot(
   ylab = "AÑO", 
   xlim = range(c(ic_inf, ic_sup)), 
   ylim = c(2015, 2023), 
-  main = "ESTIMACION COEF de VAR DEL PUNTAJE EN MATEMATICAS EN BOGOTÁ", 
+  main = "ESTIMACIÓN COEF de VAR DEL PUNTAJE EN MATEMÁTICAS EN BOGOTÁ", 
   yaxt = "n", cex.axis = 0.7, cex.lab = 0.8, 
   font.lab = 2, font.main = 2, cex.main = 1, 
   col.axis = "grey20", col.main = "black", 
@@ -104,7 +104,7 @@ for (i in seq_along(años)) {
 mtext("SIMULACIÓN MONTE CARLO DE LOS VALORES DE Cvar POR AÑOS", side = 3, line = 0.5, cex = 0.8, col = "grey20", font = 2)
 
 # Leyenda
-legend("topright", legend = c("CV", "IC 95%"), col = c("red", "gray"), lty = c(1, 1), lwd = 1.2, cex = 0.8)
+legend("topright", legend = c("CV ALTO", "CV MEDIO", "CV BAJO", "IC 95%"), col = c("red", "royalblue", "black", "gray"), lty = c(1, 2, 2, 1), lwd = 1.2, cex = 0.8)
 
 ```
 
@@ -134,7 +134,8 @@ max_theta <- max(theta)
 
 ```{r}
 # Generar un mapa para extraer la leyenda global
-legend_map <- create_map(bogota_shp_rep %>% filter(year == 2015), 2015)
+legend_map <- create_map(bogota_shp_rep %>%
+                           filter(year == 2015), 2015, name = "CV")
 legend <- cowplot::get_legend(legend_map)
 
 # Generar una lista de mapas sin leyendas
