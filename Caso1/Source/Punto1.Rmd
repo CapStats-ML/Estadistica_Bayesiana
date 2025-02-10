@@ -55,7 +55,7 @@ legend("topright", legend = c("Media", "IC 95%"), col = c("#ff0000", "grey5"),
 
 ```
 
-La media posterior $(\theta)$ es de 55.073, indicando que los estudiantes de Bogotá en 2023 tienen un puntaje promedio de 55.073 en la prueba de matemáticas, lo cual indica que en primedio sus puntajes son superiores al promedio teórico naciopnal de 50 puntos. 
+Como se puede apreciar, la media posterior $(\theta)$ es de 55.073, y ya que su respectivo coeficiente de variación es muy bajo y a la vez los intervalos de credibilidad no contienen el valor de 50 que se tiene como referencia, se puede decir que con una probabilidad del 95 $\%$, Bogotá en 2023 obtuvo un promedio de puntajes superiores al promedio teórico nacional de 50 puntos. 
 
 
 ```{r}
@@ -81,7 +81,7 @@ legend("topright", legend = c("Media", "IC 95%"), col = c("#ff0000", "grey5"),
 ```
 
 
-La desviación estándar posterior $(\sigma)$ es de 11.994, lo que sugiere que los puntajes de los estudiantes de Bogotá en 2023 tienen una variabilidad de aproximadamente 12 puntos alrededor de la media, la cual es más alta que la desviación estándar teórica de 10 puntos.
+Por otra parte, al concentrarse en la desviación estándar posterior $(\sigma)$, se puede ver que esta es de 11.994, y como su coeficiente de variación asegura buena precisión, por ser muy bajo, y a su vez los intervalos de credibilidad no contienen el valor de 10 establecido para este tipo de pruebas, se concluye entonces que con una probabilidad del $95\%$, Bogotá en 2023 obtuvo una desviación superior en sus puntajes con respecto al teórico nacional de 10 puntos. 
 
 
 ```{r}
@@ -105,10 +105,8 @@ legend("topright", legend = c("Media", "IC 95%"), col = c("#ff0000", "grey5"),
 ```
 
 
-El coeficiente de variación posterior $(\zeta)$ es de 0.217, lo que indica que la variabilidad relativa de los puntajes de los estudiantes de Bogotá en 2023 es del 21.7%, lo cual es más alto que el coeficiente de variación teórico de 20%.
+Por último, al revisar el coeficiente de variación $(\zeta)$, se ve que de manera posterior este arroja un valor de 0.218, el cual, al compararse con el estándar esperado de 0.2, se ve que es ligeramente superior, y además de esto, se confirma esta afirmación porque se tienen intervalos de credibilidad que no contienen el valor de 0.2 y un coeficiente de variación de solo 0.026, lo cual da una buena precisión sobre la estimación y permite concluir que con una probabilidad del 95 $\%$, Bogotá en 2023 tuvo una variación en sus puntajes ligeramente superior al 0.2 que se esperaba teóricamente.
 
-Los intervalos de credibilidad al $95\%$ son estrechos, lo que sugiere alta precisión en las estimaciones, respaldada por un tamaño de muestra suficientemente grande.
+En general, se puede decir entonces que los resultados muestran que los estudiantes de Bogotá en $t=9$ tuvieron un desempeño promedio superior al estándar nacional, pero con una variabilidad, que aunque sea ligeramente pequeña, si es superior a la esperada. Esto sugiere que Bogotá tiene buen nivel de preparación en matemáticas por encima del esperado, aunque con cierta heterogeneidad dentro de su población estudiantil.
 
-Los resultados muestran que los estudiantes de Bogotá en $t=9$ tuvieron un desempeño promedio superior al estándar nacional, con una variabilidad relativamente superior a la esperada. Esto sugiere que Bogotá tiene un nivel de preparación en matemáticas por encima del esperado, aunque con cierta heterogeneidad dentro de su población estudiantil.
-
-
+De manera adicional, se muestran los histogramas correspondientes a las distribuciones de los valores simulados de $(\theta)$, $(\sigma)$, y $(\zeta)$ para así observar de manera gráfica tanto las estimaciones como su precisión y los intervalos de credibilidad establecidos.

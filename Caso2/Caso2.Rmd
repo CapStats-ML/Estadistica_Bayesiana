@@ -1,26 +1,32 @@
 ---
-title: " EXPLORACION EXPLORACION EXPLORACION EXPLORACION"
-subtitle: "CASO DE ESTUDIO 1 - ESTADÍSTICA BAYESIANA"
+title: "CASO DE ESTUDIO 2 - ESTADÍSTICA BAYESIANA"
+subtitle: "MODELOS JERARQUICOS BAYESIANOS PARA LA EVALUACION DE DESIGUALDADES TERRITORIALES EN EL PUNTAJE GLOBAL DE LA PRUEBA SABER 11 EN COLOMBIA"
 author:
-  - name: "Cesar Augusto Prieto Sarmiento"
-    affiliation: |
-      Universidad Nacional de Colombia  
-      Departamento de Estadística
-    email: "ceprieto@unal.edu.co"
   - name: "Luis Felipe Basto Ruiz"
+#    position: "Estudiante de Pregrado"
     affiliation: |
       Universidad Nacional de Colombia  
       Departamento de Estadística
+      
+      Estudiante de Pregrado en Estadística
     email: "lbastor@unal.edu.co"
+  - name: "Cesar Augusto Prieto Sarmiento"
+#    position: "Estudiante de Pregrado"
+    affiliation: |
+      Universidad Nacional de Colombia  
+      Departamento de Estadística
+      
+      Estudiante de Pregrado en Estadística
+    email: "ceprieto@unal.edu.co"
 website: "https://github.com/CapStats-ML"
 output:
   html_document:
     toc: false
     fig_caption: true
     template: template.html
-    code_folding: hide
+#    code_folding: hide
+    mathjax: default
 ---
-
 
 
 ```{r setup, include=FALSE}

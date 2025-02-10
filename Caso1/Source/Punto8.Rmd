@@ -1,4 +1,4 @@
-El enunciado del 8vo punto a desarrollar dice lo siguiente:
+El enunciado del octavo punto a desarrollar dice lo siguiente: Un \textbf{diagrama de Sankey} es una excelente herramienta para visualizar la evolución de un proceso de clustering, ya que puede mostrar cómo los elementos cambian de un grupo a otro a lo largo de diferentes etapas o períodos. Representar la evolución del proceso de clustering obtenido en el numeral anterior mediante un diagrama de Sankey, mostrando cómo los elementos se redistribuyen entre los diferentes grupos a lo largo de los periodos.
 
 - Utilizar los resultados de agrupamiento para crear un diagrama de Sankey que muestre la evolución de los grupos a lo largo del tiempo.
 
@@ -91,7 +91,7 @@ for (yr in unique_years) {
 
 
 
-Estos diagramas nos enseñan como se van agrupando de forma diferente los departamentos a lo largo de lo 9 periodos de tiempo explorados en este estudio. Ahora, exploremos el diagrama circular de Sankey para el año 2023, para poder visualizar mejor los datos. 
+La serie de diagramas de Sankey circulares ilustra la evolución de los agrupamientos a lo largo de diferentes escenarios o periodos. Aunque se mantiene la estructura de cinco clústers, los cambios en las conexiones entre departamentos y clústers sugieren variaciones en los patrones de similitud. Esto indica que las características de los datos o las condiciones del modelo impactan significativamente en la configuración de los grupos. Ahora, exploremos el diagrama circular de Sankey para el año 2023, para poder visualizar mejor los datos. 
 
 ```{r}
 
@@ -165,3 +165,4 @@ legend("right", legend = c(departamentos$nombre),
 ```
 
 
+El diagrama de Sankey circular muestra la distribución de los departamentos colombianos en cinco clústers principales para el año 2023, según un modelo de agrupamiento basado en Mclust. Se observa que ciertos clústers concentran departamentos con características similares, mientras que otros presentan mayor diversidad en su composición. El uso de conexiones coloridas facilita la identificación de relaciones entre departamentos y clústers, destacando patrones relevantes en el agrupamiento.

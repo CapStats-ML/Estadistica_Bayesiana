@@ -21,8 +21,7 @@ tablas <- lapply(resultados, function(x) x$resultados)
 ```
 
 
-Luego la visualización de estos resultados estaría dada de la siguiente manera 
-
+Luego de ajustar los modelos con respecto a esos diferentes periodos, la tabla para la visualización de estos resultados estaría dada de la siguiente manera
 
 
 ```{r}
@@ -63,6 +62,9 @@ knitr::kable(X, digits = 3, align = "c",
              caption = "Inferencia Bayesiana en todos los periodos para Bogotá")
 ```
 
+De la tabla se puede decir que a modo general durante los periodos estudiados los intervalos de credibilidad tienden a "atrapar" ese valor promedio estándar de 0.2 que se tiene como referencia a nivel poblacional para la prueba, lo cual indica que no hay evidencia estadística que sugiera que dicho valor es diferente a este 0.2 de referencia, sin embargo, para los periodos de 2015 y 2023 se ve que los límites están significativamente por encima de dicho valor, así entonces se concluye que con una probabilidad del $95\%$ el coeficiente de variación para la prueba en estos periodos es mayor que el valor de 0.2 esperado, esto indica que habría una mayor volatilidad en los resultados, lo cual se traduce en poder ver tanto puntajes muy bajos como muy altos para ciertos individuos.
+
+Nuevamente, de manera extra se adjunta un nuevo gráfico de las estimaciones junto con sus correspondientes intervalos pero en este caso para el coeficiente de variación. 
 
 
 ```{r}
@@ -109,7 +111,9 @@ legend("topright", legend = c("CV ALTO", "CV MEDIO", "CV BAJO", "IC 95%"), col =
 ```
 
 
-Ahora, obervemos en el mapa como se comporta el coeficiente de variacion de los puntajes de matemáticas en Bogotá en los diferentes periodos.
+Del gráfico, se ve que al tomar como referencia la línea estándar del valor de 0.2, la mayoría de los periodos en efecto tienden a comportarse como se esperaría, no obstante, es curioso ver como para los años 2015 y 2023 se obtuvieron coeficientes que sobrepasan lo establecido, tal y como se había mencionado al solo ver la tabla, y aun mejor, para el año 2020 se ve que se tuvieron resultados por debajo de esta referencia, lo cual de cierta manera es "extraño" comparando con los demás periodos, pero a la vez si se le trata de dar un sentido que vaya más allá no resulta tan sospechoso al ser el año en el que se presentó el estallido de la pandemia de COVID 19, con esta información se puede complementar lo ya dicho en el punto anterior sobre la estimación de la media y en realidad se ve que este suceso cobra más fuerza como algo que afectó realmente los puntajes de los exámenes y ¿por qué no?, en general la educación colombiana y su medición tal y como se conocía antes de este suceso, de nuevo, cosas que se dejan en el aire gracias a la información que esconden los datos para que cada uno deje volar su imaginación.
+
+Ahora, observemos en el mapa como se comporta el coeficiente de variación de los puntajes de matemáticas en Bogotá en los diferentes periodos con otro gráfico adicional.
 
 
 ```{r}
@@ -156,3 +160,4 @@ print(final_plot)
 
 ```
 
+En esta nueva visualización, respectivamente de colores oscuros a claros, se observa como la variación de los puntajes va cambiando de más volátil a menos volátil conforme transcurren los periodos estudiados.

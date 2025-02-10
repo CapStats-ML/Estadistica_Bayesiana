@@ -1,15 +1,16 @@
-El punto 3 se realiza de forma similar al punto 2, pero en este caso se busca identificar los cinco departamentos con peores calificaciones.
+Para esta parte, se realizará un análisis similar al hecho anteriormente, con la diferencia de que acá se buscará identificar los cinco departamentos con peores calificaciones.
 
-Con esto los paso a seguir son los siguientes:
+Con esto, los pasos a ejecutar son los siguientes:
 
-   - Repetir el proceso anterior para identificar los cinco departamentos con peores calificaciones.
-   - Generar el mapa correspondiente (Colombia).
+- Repetir el proceso anterior para identificar los cinco departamentos con peores calificaciones.
+- Generar el mapa de Colombia correspondiente con esta característica de interés.
+
+A continuación, se presenta la tabla de resultados para los cinco peores departamentos.
    
 ```{r}
 peores_departamentos <- tail(df_ordenado, 5)
 ```
 
-Las tablas de los resultados para los  5 peores departamentos se pueden ver a continuacion
 
 ```{r}
 # Extraer los 5 mejores departamentos
@@ -59,7 +60,13 @@ knitr::kable(X, digits = 3, align = "c",
 
 ```
 
+De acuerdo con la tabla anterior, los cinco peores departamentos, en términos de las calificaciones promedio, corresponden, del puntaje menos bajo al más bajo, a los departamentos de La Guajira, San Andrés, Amazonas, Chocó y Vichada.
 
+En cuanto a las estimaciones, se destaca que para el caso de Vichada el coeficiente de variación indica un valor de aproximadamente $16.2\%$, lo cual hace que tenga una alta variabilidad que se traduce en una precisión más baja de la estimación. Al tratar de buscar la explicación de esto, se tiene que para este departamento solo se tienen 4 individuos en la muestra lo cual claramente es lo que resulta afectando el valor puntual de la estimación, también se observa esto aunque en una medida más baja para los departamentos de Amazonas y San Andrés.
+
+Debido a lo anterior, se puede inferir que La Guajira, Chocó y Vichada reflejarían estar por debajo del promedio estándar establecido de 50 puntos para la prueba, aunque Vichada está muy al límite, con 49.948, y como se mencionó, tiene pocos datos que respalden la calidad de la estimación, podría sugerirse para la investigación tomar más datos para ver mejor la situación, por otra parte, en cuanto a San Andrés y Amazonas, se puede decir que no hay evidencia estadística en contra del supuesto de tener un puntaje igual al promedio estándar de 50 puntos, ya que como se ve el valor de 50 esta contenido dentro de los intervalos de credibilidad.
+
+A continuación, se muestra el mapa de Colombia con los cinco departamentos con peores puntajes de la prueba, en este caso, de morado a naranja oscuro, se tendrán respectivamente los puntajes bajos a muy bajos.
 
 
 ```{r}

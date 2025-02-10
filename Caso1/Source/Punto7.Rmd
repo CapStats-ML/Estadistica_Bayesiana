@@ -117,7 +117,8 @@ clus <- readRDS("cluster_labels_list.rds")
 simi <- readRDS("similarity_matrices.rds")
 ```
 
-De manera ilustrativa se muestra el plot de una de las matrices y se hace la agrupación jerárquica y kmeans para tener una idea de cómo se pueden agrupar los departamentos.
+El procedimiento descrito a continuación se hace de manera ilustrativa:
+
 
 ```{r}
 Y <- as.data.frame(ome[[1]][2])
@@ -135,7 +136,7 @@ mtext("IDENTIFICACIÓN DE GRUPOS EN LOS DEPARTAMENTOS", side = 3, line = 0.5,
 
 ```
 
-Se hace el agrupamiento jerarquico con el fin de identificar el número de clusters que se pueden formar.
+La figura anterior muestra la dispersión de una de las matrices que se generaron, para así darnos la idea de como se va a plantear el agrupamiento para cada una de las matrices. Luego, y esto solo se realizo una vez, se tomo el agrupamiento jerárquico con el fin de identificar el número de clusters que se pueden formar mediante un dendograma, el cual se muestra en la siguiente figura.
 
 ```{r}
 # Calcular la distancia 
@@ -156,7 +157,7 @@ mtext("MÉTODO DE ELECCIÓN PARA EL NÚMERO DE CLUSTERS", side = 3, line = 0.5,
 
 ```
 
-Ahora teniendo en cuenta el numero de clusters que se pueden formar se procede a hacer el agrupamiento con el metodo de kmeans.
+En el Dendograma, se muestra una linea horizontal que parte  a la figura principal en 3 bloques, los cuales representan el número de clusters o grupos por definir, lo ideal sería, hacerlo para cada una de las 10 mil matrices, pero en esta ocasión solo se va a tomar los resultados descritos por este único Dendograma para aplicarlo al resto de matrices y tener resultados más consistentes. Ahora teniendo en cuenta el número de clusters que se pueden formar, en este caos 3, se procede a hacer el agrupamiento con el método de kmeans.
 
 ```{r}
 kmeans_result <- kmeans(Y, centers = 3, nstart = 1, algorithm = "MacQueen")
@@ -178,8 +179,7 @@ mtext("IDENTIFICACIÓN DE GRUPOS EN LOS DEPARTAMENTOS", side = 3, line = 0.5,
 
 ```
 
-
-Una vez agrupados con el metodo de kmeans se procede a obtener la matriz de similitud y graficarla mediante un heatmap 
+Una vez agrupados con el método de kmeans como se muestra en la figura anterior, se procede a obtener la matriz de similitud al aplicar este procedimiento a cada una de las 10 mil matrices en un tiempo determinado y graficarla mediante un mapa de calor (heatmap).
 
 ```{r, fig.width=6, fig.height=6}
 simi_mat <- simi[[1]]
@@ -194,8 +194,9 @@ mtext("PROBABILIDAD DE PERTENCIA AL MISMO GRUPO", side = 3, line = 1.6, cex = 0.
       col = "grey20", font = 2)
 ```
 
+La figura anterior representa la matriz de similitud para el año 2015 aquí representado como el tiempo 1, la cual se calculó a partir de las probabilidades en que dos departamento pertenecían a cierto clúster, de esta forma  se procedió con los datos generados por el código propuesto para resolver el requerimiento, con lo cual, a continuación, generaremos un gráfico donde se muestren las 9 matrices en similitud en el tiempo.
 
-De esta forma es que se procedio con los datos generados por el codigo, entonces ahora generaremos un grafico donde se muestren las 9 matrices en similitud en el tiempo. 
+En general para este tipo de diagramas, la interpretación se basará en que de un color oscuro a uno más claro, según el departamento tendrá una mayor o menor probabilidad de pertenecer a cada grupo, de esta manera se puede tener un vistazo gráfico de las coincidencias entre los departamentos.
 
 ```{r, fig.width=10, fig.height=10}
 par(mfrow = c(3, 3), mar = c(5, 4, 4, 4), bg = "white")
@@ -221,9 +222,9 @@ for (i in 1:9) {
 
 ```
 
-Por ultimo, utilizando las matrices de similitudes como entrada de la funcion Mclust, de la libreria `mclust` se genera la segmentacion final (Estimacion puntual) teniendo en cuenta las probabilidades contenidas en la matriz de similitud.
+Por último, utilizando las matrices de similitudes como entrada de la función Mclust, de la librería `mclust` se genera la segmentación final (Estimación puntual) teniendo en cuenta las probabilidades contenidas en la matriz de similitud.
 
-Haciendo una primera prueba sobre $t=9$ o el periodo de 2023 se pudo encontrar que el numero optimo de clusters obtenido fueron 5 y el modelo que mejor se ajusta es el VVI, por lo tanto para mantener una consistencia dentro de los periodos se procede a realizar el mismo procedimiento para los demas periodos teniendo en cuenta para todos el mismo numero de clusters, esto tambien nos ayudara a mejorar las visulizaciones en los mapas y en el diagrama de Sankey más adelante.
+El procedimiento que se llevo a cabo, planteo realizar el mclust para un primer tiempo o dicho de otra forma sobre la matriz de similitud de un año determinado, para así encontrar el número óptimo de clusters usando el método de ajuste por kernel gaussiano, es decir, usando distribuciones normales multivariadas para esto. A continuación, se muestra la tabla donde se aplica la función a cada matriz y se obtienen los resultados como el BIC y el modelo ajustado a cada matriz de similitud.
 
 
 ```{r}
@@ -252,7 +253,8 @@ kable(metrics_df, col.names = c("Matriz ID", "Num Clústers", "Mejor BIC", "Mode
       digits = 2, align = "c")
 
 ``` 
-Así tenemos que puede haber un maximo de 9 clusters, y el año con mejor ajuste segun el BIC es el año 9 con 5 clusters y utilizando el modelo VVI, el cual indica que el mejor modelo es el de varianza igual y forma de covarianza variable.
+
+Así, podemos observar que el análisis arroja un máximo de 9 clústers, todos evaluados con diferentes matrices de similitud. Según el BIC, el mejor ajuste se obtiene en la matriz correspondiente al ID 9, con 5 clústers y utilizando el modelo VVI. Este modelo, caracterizado por varianza igual y forma de covarianza variable, sugiere una estructura flexible en los datos, permitiendo capturar variaciones complejas entre los elementos dentro de cada clúster. La elección del modelo VVI indica que las relaciones dentro de los clústers no siguen patrones homogéneos, siendo crucial para representar adecuadamente las características de los datos analizados. Este resultado destaca la importancia de seleccionar tanto la matriz de similitud como el modelo adecuado para optimizar la calidad del agrupamiento.
 
 ```{r}
 

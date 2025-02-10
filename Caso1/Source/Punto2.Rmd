@@ -99,8 +99,11 @@ knitr::kable(X, digits = 3, align = "c",
 ```
 
 
+De acuerdo con la tabla anterior, los cinco mejores departamentos, en términos de las calificaciones promedio, corresponden a los departamentos de Santander, Bogotá, Huila, Boyacá y Cundinamarca.
 
-Antes de graficar los 5 mejores, se puede hacer util tener el grafico del mapa completo de los departamentos sin diferenciar a los 5 mejores como se muestra a continuación.
+En cuanto a las estimaciones, se ve que los cinco departamentos están por encima del promedio estándar y esto se apoya en el hecho de tener coeficientes de variación muy bajos que hacen que las estimaciones sean más precisas y a su vez, los límites de los intervalos no contienen el valor de 50.
+
+Ahora, antes de ir sobre el gráfico de los cinco mejores, a modo de curiosidad se anexa el gráfico con todos los departamentos, para ver el escenario global de los puntajes de la prueba. 
 
 ```{r}
 shp = sf::st_read("MGN2023_DPTO_POLITICO/MGN_ADM_DPTO_POLITICO.shp", quiet = T)
@@ -149,7 +152,9 @@ ggplot(data = map_data) +
   )
 ```
 
-Y a continuación, se muestra el mapa marcando la diferencia con los 5 mejores departamentos en terminos del puntaje medio obtenido en la prueba de matematicas
+De aquí, según las convenciones del mapa, se puede ver que entre más oscuro mejores son los puntajes o a su vez si son más bajos se representarían en el mapa como zonas muy claras, lo cual es bastante ilustrativo e informativo para el lector en cuestión, ya que acá va viendo como en toda Colombia los colores van haciendo la escala de color según los resultados.
+
+Por otra parte, concentrándose en lo que se quería en particular, se hará el énfasis de los cinco departamentos con mejores puntajes de la prueba.
 
 ```{r}
 ggplot(data = map_data) +
@@ -166,4 +171,4 @@ ggplot(data = map_data) +
         axis.text = element_blank(), axis.ticks = element_blank(), panel.grid = element_blank())
 ```
 
-
+De aquí, se destaca como el mejor (más oscuro) al departamento de Santander, luego la escala se va degradando de manera respectiva entre Bogotá, Huila, Boyacá y Cundinamarca, dejando así al descubierto de manera visual a los cinco mejores departamentos.

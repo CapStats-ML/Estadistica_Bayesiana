@@ -3,16 +3,20 @@ title: "CASO DE ESTUDIO 1 - ESTADÍSTICA BAYESIANA"
 subtitle: "MODELADO BAYESIANO DE LOS RESULTADOS EN MATEMÁTICAS DE LA PRUEBA SABER 11: UN ESTUDIO DE TENDENCIAS"
 author:
   - name: "Luis Felipe Basto Ruiz"
-    position: "Estudiante de Pregrado"
+#    position: "Estudiante de Pregrado"
     affiliation: |
       Universidad Nacional de Colombia  
       Departamento de Estadística
+      
+      Estudiante de Pregrado en Estadística
     email: "lbastor@unal.edu.co"
   - name: "Cesar Augusto Prieto Sarmiento"
-    position: "Estudiante de Pregrado"
+#    position: "Estudiante de Pregrado"
     affiliation: |
       Universidad Nacional de Colombia  
       Departamento de Estadística
+      
+      Estudiante de Pregrado en Estadística
     email: "ceprieto@unal.edu.co"
 website: "https://github.com/CapStats-ML"
 output:
@@ -59,16 +63,14 @@ source("Source/Funciones.R")
 
 # **INTRODUCCIÓN**
 
-En este trabajo se analiza el desempeño en la sección de matemáticas de la Prueba Saber 11, una evaluación estandarizada que mide competencias esenciales de estudiantes próximos a culminar la educación media en Colombia. El análisis se realiza bajo un enfoque bayesiano, utilizando datos recolectados entre el segundo semestre de 2015 y el segundo semestre de 2023, abarcando los 32 departamentos del país y Bogotá.  
+En este trabajo se analiza el desempeño del componente de matemáticas de la Prueba Saber 11, una evaluación estandarizada de alcance nacional administrada por el Instituto Colombiano para la Evaluación de la Educación (ICFES). Dentro de las diferentes áreas de la prueba, la sección de matemáticas, por las diferentes competencias que llega a medir por sí misma, presenta una buena oportunidad para mostrar, de una manera corta pero efectiva, un panorama general sobre el nivel de preparación de los estudiantes próximos a culminar la educación media en Colombia.
 
-El objetivo principal es modelar y comparar los resultados en matemáticas, estudiando patrones y tendencias que permitan identificar brechas en el aprendizaje, evaluar políticas educativas y proponer estrategias basadas en evidencia. Para ello, se emplea un modelo Bayesiano jerárquico que facilita la estimación de parámetros clave, el análisis de la evolución temporal y el agrupamiento de departamentos en función de sus características.  
-
-A través de simulaciones de Monte Carlo, se obtienen estimaciones de medias posteriores, intervalos de credibilidad y coeficientes de variación, junto con visualizaciones como mapas temáticos y diagramas de Sankey. Estos resultados permiten interpretar de manera integral la evolución del desempeño educativo en matemáticas y su impacto en la política educativa nacional.  
+Partiendo de una base de datos, que abarca la información de los 32 departamentos de Colombia, junto con Bogotá, a través de los periodos correspondientes entre el segundo semestre de 2015 y el segundo semestre de 2023, el objetivo principal de este análisis es modelar y comparar los diferentes resultados en matemáticas por medio del estudio de patrones, gráficos y tendencias que le permitan al lector identificar brechas en el aprendizaje, evaluar políticas educativas y proponer estrategias basadas en evidencia estadística. Para este fin, se aplica un enfoque basado en modelos Bayesianos jerárquicos, que como se podrá apreciar más adelante, a través de simulaciones de Monte Carlo, facilitarán la estimación de parámetros clave, y a su vez, el análisis de la evolución de estos a través del tiempo en función de sus características.
 
 
 # **EXPLIACIÓN DEL MODELO**
 
-El modelo utilizado para este análisis es un modelo Bayesiano jerárquico basado en una combinación de distribuciones **Normal** y **Gamma Inversa**, adecuado para casos donde tanto la media como la varianza de los datos son inciertas y tratadas como variables aleatorias. Este modelo aprovecha distribuciones previas conjugadas, lo que facilita la derivación de las distribuciones posteriores.  
+El modelo utilizado para este análisis es un modelo Bayesiano jerárquico basado en una combinación de distribuciones \textbf{Normal} y \textbf{Gamma Inversa}, adecuado para casos donde tanto la media como la varianza de los datos son inciertas y tratadas como variables aleatorias. Este modelo aprovecha distribuciones previas conjugadas, lo que facilita la derivación de las correspondientes distribuciones posteriores.  
 
 El modelo se define a través de las siguientes relaciones jerárquicas:  
 
@@ -181,7 +183,22 @@ for (name in names(bases)) {
 ```
 
 ### **9. Interpretación o Conclusiones del Análisis**
-   - Análisis detallado que explique los resultados, conectándolos con implicaciones educativas y estrategias pedagógicas.
+
+
+Como se ha podido ver a lo largo del presente documento, se han hecho ciertos comentarios y análisis en cada uno de los puntos correspondientes para la facilidad del lector en cuestión, ya que mientras se observa el desarrollo estadístico de cada punto, a su vez puede ver las interpretaciones en función de los datos y resultados obtenidos. 
+
+Aclarado esto, para terminar se hace un cierre que deja los resultados que se comentan a continuación.
+
+En primer lugar, viendo los puntajes promedio por departamentos aunque los que están dentro del top superan el promedio, se resalta que tampoco es que lo hagan por mucho, ya que por ejemplo en Santander, que es el que tiene un más alto puntaje para el periodo 2023, este puntaje solo llega a 55.407 lo cual deja bastantes inquietudes por conocer lo que esta detrás de unos resultados que realmente están muy regulares, lo ideal sería acercarse cada vez más a los 100 puntos y no solo en matemáticas sino en las demás áreas del conocimiento, esto a su vez explica el porque de los rendimientos tan pobres que se tienen en pruebas internacionales como por ejemplo las pisa y también el difícil acceso a programas de educación superior dentro de la población colombiana. 
+
+A su vez, se menciona que el análisis en verdad evidenció diferencias significativas en los puntajes de matemáticas entre los diferentes departamentos estudiados, siendo estas más pronunciadas en regiones con un notable acceso limitado a recursos educativos de calidad. Por esta razón, se puede decir que estas brechas están destacando la urgente necesidad de diseñar estrategias focalizadas en los departamentos más afectados que les permitan reducir de cierta manera las desigualdades que tienen en el aprendizaje y a su vez promuevan la equidad educativa comparándose con el resto del país.
+
+También, se puede afirmar que el estudio de patrones fue realmente útil ya que este permitió identificar que por ejemplo, los departamentos que suelen tener mayores tasas de urbanización, al final resultaron presentando un rendimiento consistentemente superior en matemáticas que otros que son rurales. Este hallazgo a modo de comentario adicional, invita a reflexionar sobre el papel de la infraestructura educativa y las oportunidades de formación docente en contextos rurales y urbanos.
+
+Por otra parte, aunque de manera empírica, se podría decir que parece observarse una cierta correlación entre los puntajes en matemáticas y factores como el índice de pobreza, ya que muchos de los departamentos con resultados bajos son de zonas con una economía limitada y hasta reportes de conflictos armados, factores que al final puede afectar en determinada medida la cobertura educativa. Esta relación, para un futuro análisis podría resultar bastante interesante porque podría resaltar la influencia de las condiciones socioeconómicas en el desempeño estudiantil y la importancia de atender estos factores dentro de las políticas públicas.
+
+Para terminar, se puede decir que a partir de los resultados obtenidos, se sugiere, dentro del marco educativo, priorizar estrategias que por ejemplo, incluyan mejores infraestructuras en los colegios, capacitaciones de los docentes para los retos que exige la educación actual y un mayor seguimiento del desempeño estudiantil, esto, con énfasis en departamentos con menor rendimiento, seguramente de esta forma se podrán ver mejoras en el futuro no solo a nivel educativo sino en general en la calidad de vida de todo el país.
+
 
 
 

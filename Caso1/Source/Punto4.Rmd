@@ -20,8 +20,7 @@ for (i in 1:length(bases)) {
 tablas <- lapply(resultados, function(x) x$resultados)
 ```
 
-
-Luego la visualización de estos resultados estaría dada de la siguiente manera 
+Luego de ajustar los modelos con respecto a esos diferentes periodos, la tabla para la visualización de estos resultados estaría dada de la siguiente manera:
 
 ```{r}
 tablas_procesadas <- lapply(tablas, procesar_kable)
@@ -60,6 +59,10 @@ rownames(X) <- c(2015:2023)
 knitr::kable(X, digits = 3, align = "c", 
              caption = "Inferencia Bayesiana en todos los periodos para Bogotá")
 ```
+
+Como se puede apreciar, las estimaciones para todos los periodos están por encima del estándar de 50 puntos, además de esto, se puede decir que son precisas dado que al hacer el contraste correspondiente con los coeficientes de variación se observa que estos son muy bajos y a la vez ninguno de los periodos tiene un intervalo de credibilidad que contenga el valor poblacional de 50 puntos, así, se puede concluir con una probabilidad del 95 $\%$ que Bogotá en todos los periodos estudiados ha estado por encima del promedio establecido para la prueba.
+
+De manera complementaria, se presenta a continuación un gráfico que refleja las estimaciones por periodo.
 
 
 ```{r}
@@ -106,7 +109,10 @@ legend("topright", legend = c("Media", "IC 95%"), col = c("red", "gray"), lty = 
 ```
 
 
-Ahora, obervemos en el mapa como se comporta la media de los puntajes de matemáticas en Bogotá en los diferentes periodos.
+Al observar el gráfico, se puede ver de manera muy interesante como los datos muestran por ejemplo dos periodos se destacan con respecto a los demás, estos son los correspondientes a 2016 y 2020. En el primero de estos, se observa un buen puntaje estimado y una banda de credibilidad ligeramente concentrada, lo cual indica buenos puntajes con relativamente baja volatilidad, por otra parte el de 2020 aunque resulto ser bueno y muy cercano al de 2016, tiene un ancho en su intervalo significativamente más amplio, de aquí, una posible explicación podría ser la pandemia, ya que esto represento dificultades logísticas para la presentación del examen que limitaron a muchos estudiantes para poder presentarlo y a su vez la razón de los buenos puntajes se puede decir que tal vez se debieron a que las pruebas se tuvieron que hacer de forma virtual, a su vez, es bastante curioso que para el año 2021 el puntaje haya pasado a ser uno de los tres más bajos en los nueve periodos estudiados, se podría pensar que tal vez por la pandemia hubo una clara incidencia sobre los puntajes, pero que a la vez se midió de mejor manera porque de cierta forma el ICFES estaba más preparado para este examen con respecto al año anterior, estas son tan solo algunas ideas sueltas que se dejan abiertas a los lectores interesados con el fin de que vean como los datos muestran cosas que a simple vista no se pueden ver y con el animo de alimentar la curiosidad que puedan llegar a tener por saber lo que pasa externamente en esos ciertos periodos donde se observan cambios peculiares a la luz de los datos.
+
+También de manera adicional, se hace un gráfico extra para ver como se comporta la media de los puntajes de matemáticas en Bogotá a lo largo de los diferentes periodos.
+
 
 ```{r}
 # Datos de Theta y años
@@ -151,4 +157,4 @@ print(final_plot)
 
 ```
 
-
+Aquí de colores oscuros a claros, se observa como de manera respectiva los puntajes van cambiando de mejores a peores con respecto al avance del tiempo.

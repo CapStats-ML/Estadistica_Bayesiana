@@ -1,4 +1,4 @@
-El enunciado del 6to punto a desarrollar dice lo siguiente:  Considere el parámetro $\eta_{t,k} = \theta_t-\theta_{t-k}$, para algún $k=1,\ldots,t-1$. Para Bogotá, calcule la media posterior y el intervalo de credibilidad al 95\% de confianza para $\eta_{9,k}$, para cada $k=1,\ldots,8$. Presente los resultados mediante una visualización que muestre simultáneamente las medias posteriores y los intervalos de credibilidad.
+El enunciado del 6to punto a desarrollar dice lo siguiente:  Considere el parámetro $\eta_{t,k} = \theta_t-\theta_{t-k}$, para algún $k=1,\ldots,t-1$. Para Bogotá, calcule la media posterior y el intervalo de credibilidad al $95\%$ de confianza para $\eta_{9,k}$, para cada $k=1,\ldots,8$. Presente los resultados mediante una visualización que muestre simultáneamente las medias posteriores y los intervalos de credibilidad.
 
 Con esto los paso a seguir son los siguientes:
 
@@ -69,6 +69,10 @@ legend("center", legend = c("Media", "IC 95%"), col = c("#ff0000", "grey5"),
 
 ```
 
+Como se aprecia en los histogramas, todos se distribuyen pasando por el cero excepto el intervalo entre $(\theta_9 - \theta_7)$ correspondiente al periodo de comparación 2023-2021, además de que se menciona que gráficamente parece verse más concentrado en sus valores alrededor de la línea roja de estimación.
+
+Por último, se muestra un gráfico de las estimaciones y sus correspondientes intervalos de credibilidad.
+
 
 ```{r}
 # Crear tabla con los resultados
@@ -85,6 +89,11 @@ rownames(resultados_finales) <- c(2015:2022)
 knitr::kable(resultados_finales, digits = 3, align = "c", 
              caption = "Inferencia Bayesiana Sobre las diferencias")
 ```
+
+
+De la tabla, al mirar los intervalos de credibilidad, se tiene que para casi todos los periodos no se rechazaría la hipótesis que establece que No existen diferencias significativas entre el último periodo de la prueba con respecto a los demás, ya que estos intervalos contienen al cero, sin embargo, para los periodos 2023-2021 si se aprecia que hay una diferencia significativa entre la media de los puntajes aquí, dado que el intervalo contiene valores por encima de cero se puede afirmar que con probabilidades del 95 $\%$ y 99$\%$ los puntajes para el año 2023 fueron superiores que para el año 2021.
+
+Se muestran también a continuación como complemento histogramas de las diferencias establecidas para observar de manera visual lo anteriormente expuesto. 
 
 ```{r}
 par(mfrow = c(1, 1), mar = c(5, 5, 4, 3), bg = "white")
@@ -114,7 +123,7 @@ mtext("COMPARACIÓN ENTRE PERIODOS DE LA PRUEBA EN BOGOTÁ", side = 3,
 ```
 
 
-
+De este gráfico, tanto a un nivel del 5$\%$ como del 1$\%$ se observa que los intervalos pasan por cero haciendo la salvedad de que para el periodo 2023-2021 si está por encima de esa línea de referencia con lo que se declara que si hay diferencias en esta comparación y además los límites alrededor de la estimación la están "encerrando" dentro de un intervalo muy pequeño de valores lo cual indica una buena precisión. 
 
 
 
