@@ -1,6 +1,5 @@
 # Anteriormente ya se desarrollaron los muestreadores de Gibbs y se calcularon las cadenas de log verosimilitud.
 
-setwd('../Downloads/')                         # Seteando el directorio de trabajo
 library(data.table)                            # Manejo de archivos grandes de datos más eficiente
 library(metRology)                             # Distribución t escalada
 library(progress)                              # Barras de progreso
@@ -18,8 +17,10 @@ muEst = matrix(NA, ncol = 4, nrow = 4)
 rownames(muEst) = paste('Modelos',1:4)
 colnames(muEst) = c('Media posterior', '2.5%', '97.5%', 'CV')
 for (i in 1:4){
-  mu = fread(paste0('datos/GibbsModelo',i,'.txt'))[['mu']]
+  mu = fread(paste0('Data/GibbsModelo',i,'.txt'))[['mu']]
   muEst[i,] = c(mean(mu), quantile(mu, 0.025), quantile(mu, 0.975), sd(mu)/mean(mu))
 }
 
-write.csv(muEst, file = 'datos/Resultados/EstimacionMU.txt')
+xtable::xtable(muEst, digits = 5)            # Salida a LaTeX       
+
+write.csv(muEst, file = 'Data/EstimacionMU.txt')

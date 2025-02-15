@@ -62,20 +62,13 @@ y = data$PUNT_GLOBAL
 
 M4 = fread('Data/GibbsModelo4.txt') # Importe de Resultados del modelo 4
 
-RankBay = matrix(NA, ncol = 3, nrow = r)
-
-colnames(RankBay) = c("INF", "MEDIAS", "SUP")
+RankBay <- matrix(NA, ncol = 3, nrow = length(Col))
+colnames(RankBay) <- c("INF", "MEDIAS", "SUP")
 rownames(RankBay) = rn
 
-# Llenado de las medias por departamento
-
-Col <- grep("^theta\\d+$", names(M4), value = TRUE)
-
-for (i in 1:r){
-  RankBay[i,2] = mean(M4[[Col[i]]])
-  RankBay[i,1] = quantile(M4[[Col[i]]], 0.025)
-  RankBay[i,3] = quantile(M4[[Col[i]]], 0.975)
-}
+# Llenado de las medias y cuantiles
+RankBay[, "MEDIAS"] <- sapply(M4[, ..Col], mean)
+RankBay[, c("INF", "SUP")] <- t(sapply(M4[, ..Col], quantile, probs = c(0.025, 0.975)))
 
 # Ordenar la matriz 
 
@@ -88,28 +81,75 @@ RankBay = RankBay[order(RankBay[,2], decreasing = FALSE),]
 # Seleccionar el número de grupos
 
 
+set.seed(123)
+
+data_matrix <- as.matrix(RankBay_df[, 2])
+
+fviz_nbclust(data_matrix, kmeans, method = "wss")  +
+  labs(title = "METODO DEL CODO PARA LA SELECCIÓN DEL NUMERO DE GRUPOS EN EL KMEANS",
+       subtitle = "DEPARTAMENTOS EN COLOMBIA AGRUPADOS POR LA MEDIA DEL MODELO M4") +
+  theme_minimal() + 
+  theme(plot.title = element_text(size = 11, face = "bold", hjust = 0.5), 
+        plot.subtitle = element_text(size = 9, face = "bold", hjust = 0.5, color = "grey50"),
+        text = element_text(size = 10),
+        legend.position = "right")
+
+# fviz_nbclust(data_matrix, kmeans, method = "silhouette")  +
+#   labs(title = "METODO DE SILUETA PARA LA SELECCIÓN DEL NUMERO DE GRUPOS EN EL KMEANS",
+#        subtitle = "DEPARTAMENTOS EN COLOMBIA AGRUPADOS POR LA MEDIA DEL MODELO M4") +
+#   theme_minimal() +
+#   theme(plot.title = element_text(size = 11, face = "bold", hjust = 0.5), 
+#         plot.subtitle = element_text(size = 9, face = "bold", hjust = 0.5, color = "grey50"),
+#         text = element_text(size = 10),
+#         legend.position = "right")
 
 
+# =====> A pesar que el método del codo sugiere de manera más clara 3 o 4 grupos, 
+#        se procede a realizar el análisis con 5 grupos dado que el grafico muestra un aporte 
+#        de la inercia en el quinto grupo
 
 
+# Inicializar la matriz de clusters
+Cls <- matrix(NA, nrow = nrow(M4), ncol = r)
+colnames(Cls) <- rn
+
+# Inicializar la matriz de incidencia
+MInci <- matrix(0, nrow = r, ncol = r)
+
+# Iterar sobre cada fila de M4
+for (i in 1:nrow(M4)) {
+  # Aplicar k-means a las medias específicas de los departamentos
+  km <- kmeans(as.numeric(M4[i, ..Col]), centers = 5, nstart = 25)
+  Cls[i, ] <- km$cluster
+  
+  # Calcular la matriz de incidencia para esta iteración
+  for (j in 1:5) {
+    b <- (Cls[i, ] == j)  # Vector lógico para el grupo j en la iteración i
+    MInci <- MInci + (b %*% t(b))  # Sumar la matriz de incidencia
+  } 
+}
+
+MInci <- MInci / nrow(M4)
+rownames(MInci) <- rn
+
+par(mfrow = c(1, 1))
+
+corrplot::corrplot(corr = MInci, 
+                   is.corr = FALSE,
+                   addgrid.col = NA, 
+                   method = "color", 
+                   tl.pos = "lt",
+                   tl.cex = 0.8,
+                   tl.col = 'black')
+
+title(main = 'Matriz de incidencia por departamentos', line = 1.8, cex.main = 1.6)
 
 
+#Plot resultado Kmmeans 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+plot(km$cluster)
+abline(v = 1:32, col = "gray", lty = 2)
+abline(h = 1:5, col = "gray", lty = 2)
 
 
 

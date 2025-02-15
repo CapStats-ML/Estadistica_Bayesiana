@@ -67,11 +67,9 @@ rownames(RankBay) = rn
 
 Col <- grep("^theta\\d+$", names(M4), value = TRUE)
 
-for (i in 1:r){
-  RankBay[i,2] = mean(M4[[Col[i]]])
-  RankBay[i,1] = quantile(M4[[Col[i]]], 0.025)
-  RankBay[i,3] = quantile(M4[[Col[i]]], 0.975)
-}
+# Llenado de las medias y cuantiles
+RankBay[, "MEDIAS"] <- sapply(M4[, ..Col], mean)
+RankBay[, c("INF", "SUP")] <- t(sapply(M4[, ..Col], quantile, probs = c(0.025, 0.975)))
 
 # Ordenar la matriz 
 

@@ -153,7 +153,7 @@ E(Modelo4)$arrow.size = 0.4; E(Modelo4)$color = 'black'
 
 # =============================== LA GRILLA ====================================
 
-pdf("DAG_Modelos.pdf", width = 10, height = 10)
+png("Punto5.png",res = 300, units = "px", width = 2000, height = 2000)
 par(mfrow = c(2,2), tcl  = 0.5, mar = c(1, 1, 2, 1), mgp = c(1.5, 0.5, 0),
     mai = c(0.3, 0, 0.3, 0), oma = c(1, 0, 1, 0))
 

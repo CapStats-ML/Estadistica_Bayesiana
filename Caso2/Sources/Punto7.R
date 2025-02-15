@@ -15,12 +15,12 @@ library(progress)                              # Barras de progreso
 #                      que contienen la simulación de los parámetros mediante el muestreador de Gibbs. 
 #                      Por esa razón el punto se desarrolla de la forma en que se desarrolla a continuación.
 
-neffLogLik = coda::effectiveSize(fread('datos/LogLike.txt'))
+neffLogLik = coda::effectiveSize(fread('Data/LogLike.txt'))
 neff = list()
 for (i in 1:4){
-  neff[[paste('Modelo',i)]] = c(coda::effectiveSize(fread(paste0('datos/GibbsModelo',i,'.txt'))), 'll' = neffLogLik[i])
+  neff[[paste('Modelo',i)]] = c(coda::effectiveSize(fread(paste0('Data/GibbsModelo',i,'.txt'))), 'll' = neffLogLik[i])
 }
 
 tabla_neff = do.call(rbind, lapply(X = neff, summary))
 xtable::xtable(tabla_neff)                      # Salida a LaTeX
-write.csv(tabla_neff, 'datos/Resultados/EffectSize.txt')
+write.csv(tabla_neff, 'Data/EffectSize.txt')

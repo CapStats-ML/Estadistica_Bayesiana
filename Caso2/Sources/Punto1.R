@@ -12,7 +12,7 @@ library(data.table)
 library(patchwork)  # Para combinar gráficos
 
 # Leer los datos del examen Saber 11
-data <- fread('Saber 11 2022-2.TXT', sep = ';')
+data <- fread('Data/Saber 11 2022-2.TXT', sep = ';')
 
 data <- data[ESTU_NACIONALIDAD == 'COLOMBIA' & 
                ESTU_PAIS_RESIDE == 'COLOMBIA' & 
@@ -36,11 +36,11 @@ media_por_departamento$COLE_COD_DEPTO_UBICACION  <- ifelse(nchar(media_por_depar
 
 
 # Leer los datos del Índice de Pobreza Monetaria (IPM)
-IPM <- read_excel("IPM.xlsx", col_types = c("text", "text", "numeric"))
+IPM <- read_excel("Data/IPM.xlsx", col_types = c("text", "text", "numeric"))
 names(IPM) <- c("dpto_nombre", "dpto_ccdgo", "IPM")
 
 # Leer el shapefile con los límites departamentales
-shp <- sf::st_read("MGN2023_DPTO_POLITICO/MGN_ADM_DPTO_POLITICO.shp", quiet = TRUE)
+shp <- sf::st_read("Data/MGN2023_DPTO_POLITICO/MGN_ADM_DPTO_POLITICO.shp", quiet = TRUE)
 
 # Convertir nombres de departamentos en mayúsculas para que coincidan en ambas bases de datos
 IPM$dpto_nombre <- toupper(IPM$dpto_nombre)

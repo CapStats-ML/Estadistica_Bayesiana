@@ -8,7 +8,7 @@ library(data.table)
 library(patchwork)  # Para combinar gráficos
 
 # Leer los datos del examen Saber 11
-data <- fread('Saber 11 2022-2.TXT', sep = ';')
+data <- fread('Data/Saber 11 2022-2.TXT', sep = ';')
 
 data <- data[ESTU_NACIONALIDAD == 'COLOMBIA' & 
                ESTU_PAIS_RESIDE == 'COLOMBIA' & 
@@ -39,7 +39,7 @@ media_mcpio$COLE_COD_MCPIO_UBICACION  <- ifelse(nchar(media_mcpio$COLE_COD_MCPIO
 
 
 # Datos de cobertura neta secundaria 
-MEN <- read_csv("MEN.csv")
+MEN <- read_csv("Data/MEN.csv")
 
 #Filtrar MEN por MEN$AÑO
 
@@ -48,7 +48,7 @@ MEN <- MEN %>%
 
 
 # Leer el shapefile con los límites departamentales
-shp1 <- sf::st_read("MGN2023_MCPIO_POLITICO/Municipios.shp", quiet = TRUE)
+shp1 <- sf::st_read("Data/MGN2023_MCPIO_POLITICO/Municipios.shp", quiet = TRUE)
 
 #Concatenar DPTO_CCDGO y MPIO_CCDGO para obtener todo el codigo del departamente 
 

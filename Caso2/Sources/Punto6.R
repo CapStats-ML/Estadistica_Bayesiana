@@ -130,6 +130,13 @@ stopCluster(cl)
 # =========================> GUARDAR LOS RESULTADOS: 
 fwrite(x = logVerosimilitud, file = 'Data/logVerosimilitud.txt')
 
+# Tabla para las medias de las log verosimilitudes
+
+tabla = data.table(Modelo = c('Modelo 1', 'Modelo 2', 'Modelo 3', 'Modelo 4'),
+                   Media = colMeans(logVerosimilitud))
+
+xtable::xtable(tabla, digits = 5)
+
 # =========================> GRAFICAR LOS RESULTADOS:
 
 col <- c("#fb9062", "#ee5d6c", "#ce4993", "#6a0d83")

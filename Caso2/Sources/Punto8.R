@@ -17,10 +17,10 @@ library(progress)                              # Barras de progreso
 #                      dice: "...De los parámetros..." Pero en la clase de modelos multinivel sí incluía
 #                      la log verosimilitud, pero pues quitarla es sencillo.
 
-eeLogLik = apply(X = fread('datos/LogLike.txt'), MARGIN = 2, sd)/neffLogLik
+eeLogLik = apply(X = fread('Data/LogLike.txt'), MARGIN = 2, sd)/neffLogLik
 ee = list()
 for (i in 1:4){
-  ee[[paste('Modelo',i)]] = c(apply(X = fread(paste0('datos/GibbsModelo',i,'.txt')), 
+  ee[[paste('Modelo',i)]] = c(apply(X = fread(paste0('Data/GibbsModelo',i,'.txt')), 
                                     MARGIN = 2, 
                                     sd)/sqrt(neff[[i]][1:(length(neff[[i]])-1)]), 
                               'll' = eeLogLik[i])
@@ -28,4 +28,4 @@ for (i in 1:4){
 
 tabla_ee = do.call(rbind, lapply(X = ee, function(x) summary(x)[1:5]))
 xtable::xtable(tabla_ee, digits = 5)            # Salida a LaTeX       
-write.csv(tabla_ee, 'datos/Resultados/StandardError.txt')
+write.csv(tabla_ee, 'Data/StandardError.txt')

@@ -1,6 +1,5 @@
 # Anteriormente ya se desarrollaron los muestreadores de Gibbs y se calcularon las cadenas de log verosimilitud.
 
-setwd('../Downloads/')                         # Seteando el directorio de trabajo
 library(data.table)                            # Manejo de archivos grandes de datos más eficiente
 library(metRology)                             # Distribución t escalada
 library(progress)                              # Barras de progreso
@@ -23,7 +22,7 @@ library(progress)                              # Barras de progreso
 #                      Además de que ahora se necesita información adicional del set de datos.
 
 # SE NECESITA INFORMACIÓN DE LA BASE DE DATOS:
-data <- fread('datos/Saber 11 2022-2.TXT', sep = ';')
+data <- fread('Data/Saber 11 2022-2.TXT', sep = ';')
 data <- data[ESTU_NACIONALIDAD == 'COLOMBIA' & 
                ESTU_PAIS_RESIDE == 'COLOMBIA' & 
                ESTU_ESTADOINVESTIGACION == 'PUBLICAR' & 
@@ -62,7 +61,7 @@ y = data$PUNT_GLOBAL
 
 # ==> Medias posteriores para todos los parámetros: 
 est = lapply(1:4, function(x){
-  colMeans(fread(paste0('datos/GibbsModelo', x, '.txt')))
+  colMeans(fread(paste0('Data/GibbsModelo', x, '.txt')))
 })
 
 names(est) = paste('Modelo', 1:4)
@@ -83,7 +82,7 @@ l4 = sum(dt.scaled(x = y, df = 3, log = T,
 l = c(l1,l2,l3,l4)
 
 # =====> Cálculo del pDIC:
-lp = colMeans(fread('datos/LogLike.txt'))
+lp = colMeans(fread('Data/LogLike.txt'))
 pDIC = 2 * (l - lp)
 
 # =====> Cálculo del DIC:
@@ -100,7 +99,7 @@ information[,2] = DIC
 # ==========> CÁLCULO DEL WAIC:
 
 # ======> MODELO 1:
-modelo = fread('datos/GibbsModelo1.txt')
+modelo = fread('Data/GibbsModelo1.txt')
 lppd = 0 
 pWAIC = 0 
 parametros = paste0('theta', group)
@@ -134,7 +133,7 @@ WAIC = -2 * lppd + 2 * pWAIC
 information[1,3:4] = c(pWAIC, WAIC)
 
 # ======> MODELO 2:
-modelo = fread('datos/GibbsModelo2.txt')
+modelo = fread('Data/GibbsModelo2.txt')
 lppd = 0 
 pWAIC = 0 
 theta = paste0('theta', group)
@@ -167,7 +166,7 @@ information[2,3:4] = c(pWAIC, WAIC)
 
 
 # =====> MODELO 3:
-modelo = fread('datos/GibbsModelo3.txt')
+modelo = fread('Data/GibbsModelo3.txt')
 lppd = 0 
 pWAIC = 0 
 theta = paste0('eps', groupM)
@@ -199,7 +198,7 @@ WAIC = -2 * lppd + 2 * pWAIC
 information[3,3:4] = c(pWAIC, WAIC)
 
 # ======> MODELO 4:
-modelo = fread('datos/GibbsModelo4.txt')
+modelo = fread('Data/GibbsModelo4.txt')
 lppd = 0 
 pWAIC = 0 
 theta = paste0('eps', groupM)
@@ -229,5 +228,8 @@ pWAIC = sum(2 * (vector["tmp1",] - vector["tmp2",]))
 WAIC = -2 * lppd + 2 * pWAIC
 
 information[4,3:4] = c(pWAIC, WAIC)
+xtable::xtable(information, digits = 5)            # Salida a LaTeX       
 
-write.csv(information, file = 'datos/Resultados/InfoCriteria.txt')
+
+
+write.csv(information, file = 'Data/Resultados/InfoCriteria.txt')
