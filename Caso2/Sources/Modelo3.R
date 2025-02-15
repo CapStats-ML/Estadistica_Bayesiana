@@ -61,7 +61,7 @@ set.seed(1305)
 # MEDIA DE LAS OBSERVACIONES:
 mu = rnorm(1, mean = mu0, sd = gamma0)
 tau = 1/rgamma(n = 1, shape = 0.5, rate = 0.5 * tau0^2) 
-theta = rnorm(n = r, mean = mu, sd = tau)
+theta = rnorm(n = r, mean = mu, sd = sqrt(tau))
 sigma = 1/rgamma(n = 1, shape = 0.5, rate = 0.5 * sigma0^2)
 eps = rnorm(n = n,mean = theta[groupMxD], sd = sigma)
 

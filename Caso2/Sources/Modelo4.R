@@ -72,9 +72,9 @@ sigma = rgamma(n = 1, shape = alpha0/2, rate = beta/2)
 thetak = rnorm(n = r, mean = mu, sd = sqrt(tau))
 sigmak = 1/rgamma(n = r, shape = nu/2, rate = nu * sigma * 0.5)
 
-eps = rnorm(n = n, mean = thetak[groupM], sd = sigmak[group])
+eps = rnorm(n = n, mean = thetak[groupM], sd = sqrt(sigmak[group]))
 
-kappa = 1/rgamma(n = 1, shape = eps0/2, rate =  0.5 * eps0 * kappa0^2) 
+kappa = rgamma(n = 1, shape = eps0/2, rate =  0.5 * eps0 * kappa0^2) 
 
 s = 1/rgamma(n = N, shape = 2, rate = 1.5 * kappa + 0.5 * (y - eps[groupM])^2)
 
@@ -106,7 +106,7 @@ for (i in 1:m){
                  rate = 1250 + 0.5 * t(vector) %*% vector)
   
   # ===> Actualizando nu:   (Checking)
-  lpnu = nus0 * r/2 * log( nus0 * sigma * 0.5) - r * log(gamma(nus0 * 0.05)) - 
+  lpnu = nus0 * r/2 * log( nus0 * sigma * 0.5) - r * lgamma(nus0 * 0.5) - 
     nus0 * 0.5 * sum(log(sigmak)) - nus0 * (lambda0  + sigma/2 * sum(1/sigmak))
   nu = sample(x = nus0, size = 1, prob = exp(lpnu - max(lpnu)))
   
@@ -129,7 +129,7 @@ for (i in 1:m){
   
   # ===> Actulizando epsilon: 
   vector = thetak/sigmak
-  Den = 1/(rowsum(1/s, groupM) + 1/sigma)
+  Den = 1/(rowsum(1/s, groupM) + (1/sigmak)[groupMxD])
   eps = rnorm(n = n, 
               mean = ((thetak/sigmak)[groupMxD] + rowsum(y/s, groupM)) * Den, 
               sd = sqrt(Den))

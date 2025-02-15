@@ -11,6 +11,8 @@ library(progress)                              # Barras de progreso
 #                  y cuando se quieren llamar varias object[, columnas] es la mejor forma
 
 
+
+
 # ==========> PUNTO 9: CALCULAR EL DIC Y EL WAIC DE CADA MODELO:
 #                      Para calcular estos dos criterios de información se necesitan tener las estimaciones
 #                      de todos los modelos y recordar que: 
@@ -20,18 +22,8 @@ library(progress)                              # Barras de progreso
 #                         - Modelo 4: Medias específicas por municipio y departamento. 
 #                      Además de que ahora se necesita información adicional del set de datos.
 
-# ===> ESTIMACIONES:
-est = list()
-for (i in 1:4){
-  est[[paste('Modelo',i)]] = colMeans(fread(paste0('Data/GibbsModelo',i,'.txt')))
-}
-
-# ===> LOG LIKELIHOOD CHAIN:
-logLike = fread('Data/LogLike.txt')
-
-# ===> INFORMACIÓN ADICIONAL DEL SET DE DATOS:
-# Lectura y filtrado de datos
-data <- fread('Data/Saber 11 2022-2.TXT', sep = ';')
+# SE NECESITA INFORMACIÓN DE LA BASE DE DATOS:
+data <- fread('datos/Saber 11 2022-2.TXT', sep = ';')
 data <- data[ESTU_NACIONALIDAD == 'COLOMBIA' & 
                ESTU_PAIS_RESIDE == 'COLOMBIA' & 
                ESTU_ESTADOINVESTIGACION == 'PUBLICAR' & 
@@ -66,113 +58,176 @@ for (i in unique(group)){
 y = data$PUNT_GLOBAL
 
 
-# ===> CÁLCULO DEL pDIC
+# ============> CÁLCULO DIC: 
 
-information = matrix(NA, nrow = 4, ncol = 4)
-colnames(information) = c('pDIC','DIC', 'pWAIC','WAIC')
+# ==> Medias posteriores para todos los parámetros: 
+est = lapply(1:4, function(x){
+  colMeans(fread(paste0('datos/GibbsModelo', x, '.txt')))
+})
+
+names(est) = paste('Modelo', 1:4)
+
+# ==> Cálculo de las log verosimilitudes:
+l1 = sum(dt.scaled(x = y, df = 3, log = T, 
+                   mean = est$`Modelo 1`[paste0('theta', 1:32)[group]], 
+                   sd = sqrt(est$`Modelo 1`["sigma2"])))
+l2 = sum(dt.scaled(x = y, df = 3, log = T, 
+                   mean = est$`Modelo 2`[paste0('theta', 1:32)[group]], 
+                   sd = sqrt(est$`Modelo 2`[paste0('sigma', 1:32)[group]])))
+l3 = sum(dt.scaled(x = y, df = 3, log = T, 
+                   mean = est$`Modelo 3`[paste0('eps', 1:n)[groupM]], 
+                   sd = sqrt(est$`Modelo 3`["kappa"])))
+l4 = sum(dt.scaled(x = y, df = 3, log = T, 
+                   mean = est$`Modelo 4`[paste0('eps', 1:n)[groupM]], 
+                   sd = sqrt(est$`Modelo 4`["kappa"])))
+l = c(l1,l2,l3,l4)
+
+# =====> Cálculo del pDIC:
+lp = colMeans(fread('datos/LogLike.txt'))
+pDIC = 2 * (l - lp)
+
+# =====> Cálculo del DIC:
+DIC = -2 * l + 2 * pDIC
+
+# ==> Presentación de los resultados: 
+
+information = matrix(0, ncol = 4, nrow = 4)
+colnames(information) = c('pDIC', 'DIC', 'pWAIC', "WAIC")
 rownames(information) = paste('Modelo', 1:4)
+information[,1] = pDIC
+information[,2] = DIC
 
-l1 = sum(dt.scaled(x = y, df = 3,
-                   mean = est$`Modelo 1`[paste0('theta',1:32)][group],
-                   sd = est$`Modelo 1`["sigma2"], 
-                   log = T))
-information["Modelo 1","pDIC"] = 2 * (l1 - mean(logLike$`Modelo 1`))
+# ==========> CÁLCULO DEL WAIC:
 
-l2 = sum(dt.scaled(x = y, df = 3, 
-                   mean = est$`Modelo 2`[paste0('theta',1:32)][group],
-                   sd = est$`Modelo 2`[paste0('sigma',1:32)][group], 
-                   log = T))
-information["Modelo 2","pDIC"] = 2 * (l2 - mean(logLike$`Modelo 2`))
+# ======> MODELO 1:
+modelo = fread('datos/GibbsModelo1.txt')
+lppd = 0 
+pWAIC = 0 
+parametros = paste0('theta', group)
+sigma = sqrt(modelo[["sigma2"]])
 
-l3 = sum(dt.scaled(x = y, df = 3, 
-                   mean = est$`Modelo 3`[paste0('eps',1:n)][groupM],
-                   sd = est$`Modelo 3`["kappa"], 
-                   log = T))
+n_cores = detectCores() - 1
 
-information["Modelo 3","pDIC"] = 2 * (l3 -  mean(logLike$`Modelo 3`))
+cl = makeCluster(n_cores)
+clusterExport(cl, c('y', 'modelo', 'parametros', 'sigma', 'dt.scaled'))
 
-l4 = sum(dt.scaled(x = y, df = 3, 
-                   mean = est$`Modelo 4`[paste0('eps',1:1112)][groupM],
-                   sd = est$`Modelo 4`["kappa"], 
-                   log = T)) 
-information["Modelo 4","pDIC"] = 2 * (l4 - mean(logLike$`Modelo 4`))
-
-# ==> CÁLCULO DEL DIC: 
-information[,"DIC"] = -2 * c(l1, l2, l3, l4) + 2 * information[,"pDIC"]
-
-# ===> CÁLCULO DEL WAIC:
-library(foreach)
-library(doParallel)
-
-# Configurar el cluster paralelo
-cl <- makeCluster(detectCores())
-registerDoParallel(cl)
-
-medias = list(M1 = fread('Data/GibbsModelo1.txt')[, paste0('theta', 1:32)], 
-              M2 = fread('Data/GibbsModelo2.txt')[, paste0('theta', 1:32)], 
-              M3 = fread('Data/GibbsModelo3.txt')[, paste0('eps', 1:1112)], 
-              M4 = fread('Data/GibbsModelo4.txt')[, paste0('eps', 1:1112)])
-
-varianzas = list(M1 = fread('Data/GibbsModelo1.txt')[['sigma2']], 
-                 M2 = fread('Data/GibbsModelo2.txt')[,paste0('sigma',1:32)], 
-                 M3 = fread('Data/GibbsModelo3.txt')[['kappa']],
-                 M4 = fread('Data/GibbsModelo4.txt')[['kappa']])
-
-
-# Exportar variables y funciones necesarias a los workers
-clusterExport(cl, varlist = c("y", "group", "groupM", "medias", "varianzas", "dt.scaled"))
-
-# Calcular lppd y pWAIC en paralelo
-resultados <- foreach(i = 1:N, .combine = function(a, b) {
-  list(
-    lppd = a$lppd + b$lppd,
-    pWAIC = a$pWAIC + b$pWAIC
-  )
-}, .init = list(lppd = numeric(4), pWAIC = numeric(4)), .packages = c("data.table", "metRology")) %dopar% {
+tictoc::tic()
+vector = parSapply(cl, 1:N, function(i){
+  tmp = log(mean(dt.scaled(x = y[i], df = 3, 
+                           mean =  modelo[[parametros[i]]], 
+                           sd = sigma)))
   
-  # Cálculo de componentes para cada observación i
-  tmp1 = metRology::dt.scaled(x = y[i], df = 3, 
-                              mean = medias$M1[[group[i]]], 
-                              sd = sqrt(varianzas$M1))
-  tmp2 = metRology::dt.scaled(x = y[i], df = 3, 
-                              mean = medias$M2[[group[i]]], 
-                              sd = sqrt(varianzas$M2[[group[i]]]))
-  tmp3 = metRology::dt.scaled(x = y[i], df = 3, 
-                              mean = medias$M3[[groupM[i]]], 
-                              sd = sqrt(varianzas$M3))
-  tmp4 = metRology::dt.scaled(x = y[i], df = 3, 
-                              mean = medias$M4[[groupM[i]]], 
-                              sd = sqrt(varianzas$M4))
+  tmp2 = mean(dt.scaled(x = y[i], df = 3, 
+                        mean =  modelo[[parametros[i]]], 
+                        sd = sigma, 
+                        log = T))
   
-  # Contribución a lppd
-  lppd_i = log(c(mean(tmp1), mean(tmp2), mean(tmp3), mean(tmp4)))
-  
-  # Cálculo de términos para pWAIC
-  tmp12 = metRology::dt.scaled(x = y[i], df = 3, 
-                               mean = medias$M1[[group[i]]], 
-                               sd = sqrt(varianzas$M1), log = TRUE)
-  tmp22 = metRology::dt.scaled(x = y[i], df = 3, 
-                               mean = medias$M2[[group[i]]], 
-                               sd = sqrt(varianzas$M2[[group[i]]]), log = TRUE)
-  tmp32 = metRology::dt.scaled(x = y[i], df = 3, 
-                               mean = medias$M3[[groupM[i]]], 
-                               sd = sqrt(varianzas$M3), log = TRUE)
-  tmp42 = metRology::dt.scaled(x = y[i], df = 3, 
-                               mean = medias$M4[[groupM[i]]], 
-                               sd = sqrt(varianzas$M4), log = TRUE)
-  
-  pWAIC_i = 2 * (log(c(mean(tmp1), mean(tmp2), mean(tmp3), mean(tmp4))) - 
-                   c(mean(tmp12), mean(tmp22), mean(tmp32), mean(tmp42)))
-  
-  # Retornar resultados parciales
-  list(lppd = lppd_i, pWAIC = pWAIC_i)
-}
-
-# Detener el cluster
+  return(c('tmp1' = tmp, 'tmp2' = tmp2))
+})
+tictoc::toc()
 stopCluster(cl)
 
-# Asignar resultados a la matriz de información
-information[, "pWAIC"] <- resultados$pWAIC
-information[, "WAIC"] <- -2 * resultados$lppd + 2 * resultados$pWAIC
+lppd = sum(vector["tmp1",])
+pWAIC = sum(2 * (vector["tmp1",] - vector["tmp2",]))
+WAIC = -2 * lppd + 2 * pWAIC
 
-write.csv(information, file = 'Data/InfoCriteria.txt')
+information[1,3:4] = c(pWAIC, WAIC)
+
+# ======> MODELO 2:
+modelo = fread('datos/GibbsModelo2.txt')
+lppd = 0 
+pWAIC = 0 
+theta = paste0('theta', group)
+sigma = paste0('sigma', group)
+
+cl = makeCluster(n_cores)
+clusterExport(cl, c('y', 'modelo', 'theta', 'sigma', 'dt.scaled'))
+
+tictoc::tic()
+vector = parSapply(cl, 1:N, function(i){
+  tmp = log(mean(dt.scaled(x = y[i], df = 3, 
+                           mean =  modelo[[theta[i]]], 
+                           sd = sqrt(modelo[[sigma[i]]]))))
+  
+  tmp2 = mean(dt.scaled(x = y[i], df = 3, 
+                        mean =  modelo[[theta[i]]], 
+                        sd = sqrt(modelo[[sigma[i]]]), 
+                        log = T))
+  
+  return(c('tmp1' = tmp, 'tmp2' = tmp2))
+})
+tictoc::toc()
+stopCluster(cl)
+
+lppd = sum(vector["tmp1",])
+pWAIC = sum(2 * (vector["tmp1",] - vector["tmp2",]))
+WAIC = -2 * lppd + 2 * pWAIC
+
+information[2,3:4] = c(pWAIC, WAIC)
+
+
+# =====> MODELO 3:
+modelo = fread('datos/GibbsModelo3.txt')
+lppd = 0 
+pWAIC = 0 
+theta = paste0('eps', groupM)
+sigma = sqrt(modelo[['kappa']])
+
+cl = makeCluster(n_cores)
+clusterExport(cl, c('y', 'modelo', 'theta', 'sigma', 'dt.scaled'))
+
+tictoc::tic()
+vector = parSapply(cl, 1:N, function(i){
+  tmp = log(mean(dt.scaled(x = y[i], df = 3, 
+                           mean =  modelo[[theta[i]]], 
+                           sd = sigma)))
+  
+  tmp2 = mean(dt.scaled(x = y[i], df = 3, 
+                        mean =  modelo[[theta[i]]], 
+                        sd = sigma, 
+                        log = T))
+  
+  return(c('tmp1' = tmp, 'tmp2' = tmp2))
+})
+tictoc::toc()
+stopCluster(cl)
+
+lppd = sum(vector["tmp1",])
+pWAIC = sum(2 * (vector["tmp1",] - vector["tmp2",]))
+WAIC = -2 * lppd + 2 * pWAIC
+
+information[3,3:4] = c(pWAIC, WAIC)
+
+# ======> MODELO 4:
+modelo = fread('datos/GibbsModelo4.txt')
+lppd = 0 
+pWAIC = 0 
+theta = paste0('eps', groupM)
+sigma = sqrt(modelo[['kappa']])
+
+cl = makeCluster(n_cores)
+clusterExport(cl, c('y', 'modelo', 'theta', 'sigma', 'dt.scaled'))
+
+tictoc::tic()
+vector = parSapply(cl, 1:N, function(i){
+  tmp = log(mean(dt.scaled(x = y[i], df = 3, 
+                           mean =  modelo[[theta[i]]], 
+                           sd = sigma)))
+  
+  tmp2 = mean(dt.scaled(x = y[i], df = 3, 
+                        mean =  modelo[[theta[i]]], 
+                        sd = sigma, 
+                        log = T))
+  
+  return(c('tmp1' = tmp, 'tmp2' = tmp2))
+})
+tictoc::toc()
+stopCluster(cl)
+
+lppd = sum(vector["tmp1",])
+pWAIC = sum(2 * (vector["tmp1",] - vector["tmp2",]))
+WAIC = -2 * lppd + 2 * pWAIC
+
+information[4,3:4] = c(pWAIC, WAIC)
+
+write.csv(information, file = 'datos/Resultados/InfoCriteria.txt')

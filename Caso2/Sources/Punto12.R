@@ -7,15 +7,20 @@ setwd("~/REPOS GIT/Estadistica_Bayesiana/Caso2")
 library(data.table)                            # Manejo de archivos grandes de datos más eficiente
 library(metRology)                             # Distribución t escalada
 library(progress)                              # Barras de progreso
+library(cluster)                               # K-means
+library(factoextra)                            # Visualización de K-means
+library(sf)                                    # Manipulación de datos geoespaciales
+library(dplyr)                                 # Manipulación de datos
 
 
-# =====> PUNTO 11: Usando M4 hacer el ranking de los departamentos basado en las medias
-#               especificas de los departamentos. Hacer una visualizacion del Ranking
-#               Bayesiano. La visualización debe incluir simultaneamente las estimaciones
-#               puntuales y los intervalos de credibiilidad del 95%.
+# =====> PUNTO 12: Usando M4, hacer una segmentación de los departamentos usando las medias especificas
+#               de los departamentos. por medio del método de agrupamientod de K-medias 
+#               (Usar un método apropiado para seleccionar el número de grupos). 
+#               Presentar los resultados obtenidos visualmente a través de una matriz de incidencia
+#               organizada a partir del rankin Bayesiano obtenido en el punto 11.
+#               y de un mapa que señale los departamentos que pertenecen a cada grupo.
+#               
 
-
-# Cargar datos
 
 
 # Lectura y filtrado de datos
@@ -55,7 +60,6 @@ for (i in unique(group)){
 }
 y = data$PUNT_GLOBAL
 
-
 M4 = fread('Data/GibbsModelo4.txt') # Importe de Resultados del modelo 4
 
 RankBay = matrix(NA, ncol = 3, nrow = r)
@@ -77,32 +81,35 @@ for (i in 1:r){
 
 RankBay = RankBay[order(RankBay[,2], decreasing = FALSE),]
 
-# ranking basado en el promedio muestral
- 
-# Configuración de la gráfica
-par(mfrow = c(1,1), mar = c(4,10,1.5,1), mgp = c(2.5,0.75,0))
 
-# Crear el gráfico vacío
-plot(x = c(min(RankBay[,1] - 75 ), max(RankBay[,3]) + 75), y = c(1, r), type = "n", 
-     xlab = "Puntaje", ylab = "", 
-     main = expression(bold("Ranking (promedio muestral)")), yaxt = "n")
+# =====> PUNTO 12: Usando M4, hacer una segmentación de los departamentos usando las medias especificas
+#               de los departamentos. por medio del método de agrupamientod de K-medias
 
-# Líneas guía horizontales
-abline(h = 1:r, col = "lightgray", lwd = 1)
-abline(v = 250, col = "gray", lwd = 3)
+# Seleccionar el número de grupos
 
-# Dibujar los intervalos de credibilidad
-colores = rep('black', r)
-colores[which(RankBay[,"SUP"] < 250)] = 'red' 
-colores[which(RankBay[,"INF"] > 250) ] = 'green'
 
-for (j in 1:r) {
-  segments(x0 = RankBay[j,'SUP'], y0 = j, lwd = 1, x1 = RankBay[j,'INF'], y1 = j, col = colores[j])
-  lines(x = RankBay[j,'MEDIAS'], y = j, type = "p", pch = 16, cex = 1, col = colores[j])
-}
 
-# Etiquetas en el eje Y
-axis(side = 2, at = 1:r, labels = rownames(RankBay), las = 2, cex.axis = 0.8)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -68,7 +68,7 @@ for (i in 1:m) {
   
   # Actualizar sigma
   sigma <- rgamma(1, 
-                  shape = (nu0 + nuEst * nrow(data)) / 2, 
+                  shape = (nu0 + nuEst * N) / 2, 
                   rate = (nu0 * sigma0^2 + nuEst * sum(1 / s)) / 2)
   
   # Actualizar s
@@ -82,7 +82,7 @@ for (i in 1:m) {
   over = 1/(os + 1/tau)
   theta = rnorm(n = r,
                 mean = (ys + mu/tau) * over,
-                sd = over)
+                sd = sqrt(over))
   
   # Guardar resultados después del burn-in y thinning
   if (i > 10000 & (i - begin) %% 10 == 0) {

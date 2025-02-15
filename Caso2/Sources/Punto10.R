@@ -11,14 +11,15 @@ library(progress)                              # Barras de progreso
 #                  y cuando se quieren llamar varias object[, columnas] es la mejor forma
 
 
-# ==========> PUNTO 10: ESTIMACIÓN MU.
+# ==========> PUNTO 10: ESTIMACIÓN MU:
+#                       Siendo mu la media general de la población. 
 
 muEst = matrix(NA, ncol = 4, nrow = 4)
 rownames(muEst) = paste('Modelos',1:4)
 colnames(muEst) = c('Media posterior', '2.5%', '97.5%', 'CV')
 for (i in 1:4){
-  mu = fread(paste0('Data/GibbsModelo',i,'.txt'))[['mu']]
+  mu = fread(paste0('datos/GibbsModelo',i,'.txt'))[['mu']]
   muEst[i,] = c(mean(mu), quantile(mu, 0.025), quantile(mu, 0.975), sd(mu)/mean(mu))
 }
 
-write.csv(muEst, file = 'Data/EstimacionMU.txt')
+write.csv(muEst, file = 'datos/Resultados/EstimacionMU.txt')
