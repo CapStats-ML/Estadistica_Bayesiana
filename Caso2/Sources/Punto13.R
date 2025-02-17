@@ -102,6 +102,7 @@ ResultadosIPM = cbind('Media Post' = colMeans(IPMpredicciones),
 
 ResultadosIPM
 
+xtable::xtable(ResultadosIPM, digits = 5)
 ################################################################################
 
 # Unir a la tabla de IPM las medias obtenidas por el modelo
@@ -135,7 +136,7 @@ p1 <- ggplot(data = map_data) +
 
 # Lista de los nuevos departamentos
 nuevos_dptos <- c("ARAUCA", "CASANARE", "PUTUMAYO", "AMAZONAS", 
-                  "GUAINIA", "GUAVIARE", "VAUPES", "VICHADA")
+                  "GUAINÍA", "GUAVIARE", "VAUPES", "VICHADA")
 
 # Crear una nueva variable en el mapa para diferenciar los nuevos departamentos
 map_data <- map_data %>%
