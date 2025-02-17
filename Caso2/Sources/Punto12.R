@@ -11,7 +11,7 @@ library(cluster)                               # K-means
 library(factoextra)                            # Visualización de K-means
 library(sf)                                    # Manipulación de datos geoespaciales
 library(dplyr)                                 # Manipulación de datos
-
+library(mclust)
 
 # =====> PUNTO 12: Usando M4, hacer una segmentación de los departamentos usando las medias especificas
 #               de los departamentos. por medio del método de agrupamientod de K-medias 
@@ -47,6 +47,9 @@ N = nrow(data)                                      # Totales
 
 r <- length(unique(data$COLE_COD_DEPTO_UBICACION))  # Número de departamentos
 rn <- (unique(data$COLE_DEPTO_UBICACION))      # Nombre de departamentos
+rc <- (unique(data$COLE_COD_DEPTO_UBICACION)) # Número de municipios
+rc <- ifelse(nchar(rc ) == 1, paste0("0", rc ), rc )
+
 
 n = length(unique(data$COLE_COD_MCPIO_UBICACION))   # Número de municipios
 
@@ -62,13 +65,22 @@ y = data$PUNT_GLOBAL
 
 M4 = fread('Data/GibbsModelo4.txt') # Importe de Resultados del modelo 4
 
+Col <- grep("^theta\\d+$", names(M4), value = TRUE)
+
 RankBay <- matrix(NA, ncol = 3, nrow = length(Col))
 colnames(RankBay) <- c("INF", "MEDIAS", "SUP")
 rownames(RankBay) = rn
 
+RankBay1 = RankBay
+rownames(RankBay1) = rn
+
+
 # Llenado de las medias y cuantiles
 RankBay[, "MEDIAS"] <- sapply(M4[, ..Col], mean)
 RankBay[, c("INF", "SUP")] <- t(sapply(M4[, ..Col], quantile, probs = c(0.025, 0.975)))
+
+RankBay1[, "MEDIAS"] <- sapply(M4[, ..Col], mean)
+RankBay1[, c("INF", "SUP")] <- t(sapply(M4[, ..Col], quantile, probs = c(0.025, 0.975)))
 
 # Ordenar la matriz 
 
@@ -83,7 +95,7 @@ RankBay = RankBay[order(RankBay[,2], decreasing = FALSE),]
 
 set.seed(123)
 
-data_matrix <- as.matrix(RankBay_df[, 2])
+data_matrix <- as.matrix(RankBay[, 2])
 
 fviz_nbclust(data_matrix, kmeans, method = "wss")  +
   labs(title = "METODO DEL CODO PARA LA SELECCIÓN DEL NUMERO DE GRUPOS EN EL KMEANS",
@@ -134,7 +146,7 @@ rownames(MInci) <- rn
 
 par(mfrow = c(1, 1))
 
-corrplot::corrplot(corr = MInci, 
+corrplot::corrplot(corr = MInci, order = "AOE", #"original", "AOE", "FPC", "hclust", "alphabet"
                    is.corr = FALSE,
                    addgrid.col = NA, 
                    method = "color", 
@@ -142,16 +154,78 @@ corrplot::corrplot(corr = MInci,
                    tl.cex = 0.8,
                    tl.col = 'black')
 
-title(main = 'Matriz de incidencia por departamentos', line = 1.8, cex.main = 1.6)
+
+################## MAPAS DE CLASIFICACIÓN
+
+shp <- sf::st_read("Data/MGN2023_DPTO_POLITICO/MGN_ADM_DPTO_POLITICO.shp", quiet = TRUE)
 
 
-#Plot resultado Kmmeans 
+####### MAPA CON EL MCLUST
 
-plot(km$cluster)
-abline(v = 1:32, col = "gray", lty = 2)
-abline(h = 1:5, col = "gray", lty = 2)
+set.seed(123)
+Mod1 <- Mclust(MInci, G = 5);Mod1$classification
+
+plot(Mod1, what = "classification", dimens = c(1, 2),
+     main = "Clasificación de los departamentos en 5 grupos")
+
+###### MAPA CON EL KMEANS
+
+RankBay1 <- as.data.frame(RankBay1) %>%
+  mutate(dpto_ccdgo = rownames(.)) %>%  # Agregar código de departamento
+  mutate(dpto_ccdgo = as.character(rc)) %>%  # Asegurar tipo correcto
+  arrange(match(dpto_ccdgo, Names))
+
+set.seed(123)
+km <- kmeans(as.numeric(RankBay1$MEDIAS), centers = 5, nstart = 25); km$cluster
+
+RankBay1 <- RankBay1 %>%
+  mutate(cluster = km$cluster) 
+
+# Filtrar los departamentos que están en Names y ordenarlos
+
+Names <- RankBay1$dpto_ccdgo
+
+shp1 <- shp %>%
+  filter(dpto_ccdgo %in% Names) 
+
+# Coincidencias entre dpto_ccdgo y Names
+
+shp1 <- shp1 %>%
+  left_join(RankBay1, by = "dpto_ccdgo")
+
+shp1$Class <- Mod1$classification
 
 
+colors <- c("#eeaf61", "#fb9062", "#ee5d6c", "#ce4993", "#6a0d83")
 
+# Mapa con K-Means
+ggplot(data = shp1) +
+  geom_sf(aes(fill = factor(cluster)), color = "white", size = 0.2) +
+  scale_fill_manual(values = colors, name = "Cluster") +  # Usar colores personalizados
+  ggtitle("AGRUPAMIENTO POR KMEANS DE LA MEDIAS GLOBALES",
+          subtitle = "CLUSTERS DE DEPARTAMENTOS EN COLOMBIA") +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 12, face = "bold", hjust = 0.5),
+    plot.subtitle = element_text(size = 11, face = "bold", hjust = 0.5, color = "grey40"),
+    axis.text = element_blank(),
+    axis.ticks = element_blank(),
+    panel.grid = element_blank()
+  )
+
+# Mapa con MClust
+ggplot(data = shp1) +
+  geom_sf(aes(fill = factor(Class)), color = "white", size = 0.2) +
+  scale_fill_manual(values = colors, name = "Cluster") +  # Usar colores personalizados
+  ggtitle("AGRUPAMIENTO POR MCLUST DE LA MEDIAS GLOBALES",
+          subtitle = "CLUSTERS DE DEPARTAMENTOS EN COLOMBIA") +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 12, face = "bold", hjust = 0.5),
+    plot.subtitle = element_text(size = 11, face = "bold", hjust = 0.5, color = "grey40"),
+    axis.text = element_blank(),
+    axis.ticks = element_blank(),
+    panel.grid = element_blank()
+  )
 
 

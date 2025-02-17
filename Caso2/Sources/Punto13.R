@@ -101,7 +101,20 @@ ResultadosIPM = cbind('Media Post' = colMeans(IPMpredicciones),
 
 ResultadosIPM
 
-
+ggplot(data = map_data) +
+  geom_sf(aes(fill = IPM), color = "white", size = 0.2) +
+  scale_fill_gradient2(low = "#eeaf61", mid = "#ff9818", high = "#6a0d83", 
+                       midpoint = 30, name = "IPM", na.value = "gray90") +
+  ggtitle("INCIDENCIA DE POBREZA MONETARIA POR DEPARTAMENTO",
+          subtitle = "IPM EN COLOMBIA 2018") +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 12, face = "bold", hjust = 0.5),
+    plot.subtitle = element_text(size = 11, face = "bold", hjust = 0.5, color = "grey40"),
+    axis.text = element_blank(),
+    axis.ticks = element_blank(),
+    panel.grid = element_blank()
+  )
 
 
 
