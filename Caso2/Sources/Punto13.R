@@ -12,6 +12,7 @@ library(factoextra)                            # Visualización de K-means
 library(sf)                                    # Manipulación de datos geoespaciales
 library(dplyr)                                 # Manipulación de datos
 library(readxl)
+library(patchwork)
 
 # =====> PUNTO 13: Calcular la media posterior y un intervalo de credibilidad al 95%
 #               de la incicendencia monetaria de los departamentos, para todos los departamentos
@@ -101,12 +102,25 @@ ResultadosIPM = cbind('Media Post' = colMeans(IPMpredicciones),
 
 ResultadosIPM
 
-ggplot(data = map_data) +
+################################################################################
+
+# Unir a la tabla de IPM las medias obtenidas por el modelo
+
+IPM[25:32, 3] = ResultadosIPM[,1]
+IPM$dpto_nombre <- toupper(IPM$dpto_nombre)
+
+shp <- sf::st_read("Data/MGN2023_DPTO_POLITICO/MGN_ADM_DPTO_POLITICO.shp", quiet = TRUE)
+
+map_data <- shp %>%
+  left_join(IPM, by = c("dpto_ccdgo" = "dpto_ccdgo")) 
+
+
+p1 <- ggplot(data = map_data) +
   geom_sf(aes(fill = IPM), color = "white", size = 0.2) +
   scale_fill_gradient2(low = "#eeaf61", mid = "#ff9818", high = "#6a0d83", 
                        midpoint = 30, name = "IPM", na.value = "gray90") +
-  ggtitle("INCIDENCIA DE POBREZA MONETARIA POR DEPARTAMENTO",
-          subtitle = "IPM EN COLOMBIA 2018") +
+  ggtitle("MAPA COMPLETO INCIDENCIA DE POBREZA MONETARIA ",
+          subtitle = "IPM POR DEPARTAMENTO EN COLOMBIA 2018") +
   theme_minimal() +
   theme(
     plot.title = element_text(size = 12, face = "bold", hjust = 0.5),
@@ -119,6 +133,31 @@ ggplot(data = map_data) +
 
 
 
+# Lista de los nuevos departamentos
+nuevos_dptos <- c("ARAUCA", "CASANARE", "PUTUMAYO", "AMAZONAS", 
+                  "GUAINIA", "GUAVIARE", "VAUPES", "VICHADA")
+
+# Crear una nueva variable en el mapa para diferenciar los nuevos departamentos
+map_data <- map_data %>%
+  mutate(nuevo = ifelse(dpto_nombre %in% nuevos_dptos, "Nuevo", "Otros"))
+
+p2 <- ggplot(data = map_data) +
+  geom_sf(aes(fill = ifelse(nuevo == "Nuevo", IPM, NA)), color = "white", size = 0.2) +  # Color solo para nuevos
+  geom_sf(data = map_data %>% filter(nuevo == "Otros"), fill = "gray90", color = "white", size = 0.2) +  # Color base para los demás
+  scale_fill_gradient2(low = "#eeaf61", mid = "#ff9818", high = "#6a0d83", 
+                       midpoint = 30, name = "IPM", na.value = "gray90") +
+  ggtitle("ESTIMACIÓN INCIDENCIA DE POBREZA MONETARIA ",
+          subtitle = "IPM EPARTAMENTOS ESTIMADOS EN COLOMBIA 2018") +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 12, face = "bold", hjust = 0.5),
+    plot.subtitle = element_text(size = 11, face = "bold", hjust = 0.5, color = "grey40"),
+    axis.text = element_blank(),
+    axis.ticks = element_blank(),
+    panel.grid = element_blank()
+  )
+
+p1 + p2
 
 
 
