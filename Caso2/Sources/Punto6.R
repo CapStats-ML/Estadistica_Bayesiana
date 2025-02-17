@@ -2,7 +2,7 @@ library(data.table)
 library(parallel)
 library(metRology)
 
-# Configuración del directorio de trabajo
+setwd("~/REPOS GIT/Estadistica_Bayesiana/Caso2")
 
 # Lectura y filtrado de datos
 data = fread('Data/Saber 11 2022-2.TXT', sep = ';')

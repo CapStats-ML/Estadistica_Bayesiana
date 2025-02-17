@@ -1,3 +1,6 @@
+
+setwd("~/REPOS GIT/Estadistica_Bayesiana/Caso2")
+
 # Cargar las librerías necesarias
 library(ggplot2)
 library(dplyr)

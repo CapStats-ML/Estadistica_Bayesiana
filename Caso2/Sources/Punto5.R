@@ -1,6 +1,9 @@
 # =============================== PUNTO 5 ======================================
 # En un gráfico con cuatro paneles (2x2) hacer el DAG de los modelos M1, M2, M3 y M4.
 # ==============================================================================
+
+setwd("~/REPOS GIT/Estadistica_Bayesiana/Caso2")
+
 library(intergraph)
 library(igraph)
 library(latex2exp)

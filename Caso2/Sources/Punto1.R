@@ -3,6 +3,8 @@
 # y otro con la incidencia de pobreza monetaria (IPM), colocados en una grilla.
 # ======================================================================================
 
+setwd("~/REPOS GIT/Estadistica_Bayesiana/Caso2")
+
 # Cargar las librerías necesarias
 library(ggplot2)
 library(dplyr)

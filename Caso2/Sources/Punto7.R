@@ -1,6 +1,8 @@
 # Anteriormente ya se desarrollaron los muestreadores de Gibbs y se calcularon las cadenas de log verosimilitud.
 
-setwd('../Downloads/')                         # Seteando el directorio de trabajo
+setwd("~/REPOS GIT/Estadistica_Bayesiana/Caso2")
+
+
 library(data.table)                            # Manejo de archivos grandes de datos más eficiente
 library(metRology)                             # Distribución t escalada
 library(progress)                              # Barras de progreso
