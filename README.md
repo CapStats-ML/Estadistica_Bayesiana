@@ -23,18 +23,19 @@ El objetivo principal es modelar y comparar los resultados en matemáticas, estu
             <li><a href="https://rpubs.com/CapStats/Caso1-EstBayes">Enlace a al HTML en Rpubs</a></li>
          </ul>
       </li>
-      <li><strong>Caso de Estudio 2</strong> - 
+      <li><strong>Caso de Estudio 2</strong> - El objetivo principal de este estudio es modelar la variabilidad del puntaje global a nivel municipal y departamental, permitiendo la identificación de patrones espaciales y su relación con indicadores socioeconómicos. Para ello, por parte del docente de la asignatura, se han propuesto diferentes modelos jerárquicos en los cuales se incorporan distribuciones previas flexibles, a fin de capturar adecuadamente la estructura de los datos y facilitar la inferencia bayesiana
          <ul>
             <li>Tecnologías: <em>R, RStudio, Markdown, HTML, ggplot2</em></li>
             <li><a href="https://github.com/CapStats-ML/Estadistica_Bayesiana/tree/main/Caso2">Enlace a la carpeta repositorio</a></li>
-            <li><a href="https://github.com/CapStats-ML/Estadistica_Bayesiana/tree/main/Caso2">Enlace a al HTML en Rpubs</a></li>
+            <li><a href="https://github.com/CapStats-ML/Estadistica_Bayesiana/tree/main/Caso2">Enlace a al HTML en Rpubs </a> 
+(EN CONSTRUCCIÓN) </li>
          </ul>
       </li>
-      <li><strong>Caso de Estudio 3</strong> - 
+      <li><strong>Caso de Estudio 3</strong> - SIN ASIGNAR 
          <ul>
             <li>Tecnologías: <em>R, RStudio, Markdown, HTML, ggplot2</em></li>
-            <li><a href="https://github.com/CapStats-ML/Estadistica_Bayesiana/tree/main/Caso3">Enlace a la carpeta repositorio</a></li>
-            <li><a href="https://github.com/CapStats-ML/Estadistica_Bayesiana/tree/main/Caso3">Enlace a al HTML en Rpubs</a></li>
+            <li><a href="https://github.com/CapStats-ML/Estadistica_Bayesiana/tree/main/Caso3">Enlace a la carpeta repositorio </a> (EN CONSTRUCCIÓN) </li>
+            <li><a href="https://github.com/CapStats-ML/Estadistica_Bayesiana/tree/main/Caso3">Enlace a al HTML en Rpubs</a> (EN CONSTRUCCIÓN) </li>
          </ul>
       </li>
    </ul>
