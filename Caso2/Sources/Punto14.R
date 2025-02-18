@@ -10,7 +10,7 @@ library(progress)                              # Barras de progreso
 library(tibble)
 library(readxl)
 library(readr)
-
+library(mclust)
 
 # =====> PUNTO 11: Usando M4 hacer el ranking de los departamentos basado en las medias
 #               especificas de los departamentos. Hacer una visualizacion del Ranking
@@ -148,22 +148,23 @@ MEN <- MEN[order(MEN$CÓDIGO_MUNICIPIO),]
 # Agrupamiento por MCLUST
 
 set.seed(123)
-Mod1 <- Mclust(MInci, G = 10);Mod1$classification
+Mod1 <- Mclust(MInci, modelNames = "VII", G = 9) #;Mod1$classification
 
 plot(Mod1, what = "classification", dimens = c(1, 2),
      main = "Clasificación de los departamentos en 5 grupos")
 
 ###### MAPA CON EL KMEANS
 
+Names <- rownames(RankBay1)
+
 RankBay1 <- as.data.frame(RankBay1) %>%
   mutate(COD_MUN = rownames(.)) %>%  # Agregar código de departamento
   mutate(COD_MUN = as.character(n2[,2])) %>%  # Asegurar tipo correcto
   arrange(match(COD_MUN, Names))
 
-Names <- RankBay1$COD_MUN
 
 set.seed(123)
-km <- kmeans(as.numeric(RankBay1$MEDIAS), centers = 10, nstart = 25); km$cluster
+km <- kmeans(as.numeric(RankBay1$MEDIAS), centers = 9, nstart = 25) #; km$cluster
 
 RankBay1 <- RankBay1 %>%
   mutate(cluster = km$cluster) 
@@ -193,8 +194,8 @@ shp1 <- shp1 %>%
   left_join(df_clust, by = "COD_MUN")
 
 
-colors <- c("#eeaf61", "#fb9062", "#ee5d6c", "#ce4993", "#ff4d00", "#0081a7",
-            "#00afb9", "#eef942", "#f44040", "#800080")
+colors <- c("#eeaf61", "#00afb9", "#ee5d6c", "#ff4d00", "#0081a7",
+            "#ce4993", "#eef942", "#f44040", "#800080")
 
 # Mapa con K-Means
 ggplot(data = shp1) +
@@ -225,6 +226,28 @@ ggplot(data = shp1) +
     axis.ticks = element_blank(),
     panel.grid = element_blank()
   )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

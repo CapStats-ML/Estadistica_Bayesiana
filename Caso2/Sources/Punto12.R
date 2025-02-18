@@ -163,7 +163,7 @@ shp <- sf::st_read("Data/MGN2023_DPTO_POLITICO/MGN_ADM_DPTO_POLITICO.shp", quiet
 ####### MAPA CON EL MCLUST
 
 set.seed(123)
-Mod1 <- Mclust(MInci, G = 5);Mod1$classification
+Mod1 <- Mclust(MInci, G = 3, modelNames = "VVI")  #;Mod1$classification
 
 plot(Mod1, what = "classification", dimens = c(1, 2),
      main = "Clasificación de los departamentos en 5 grupos")
@@ -176,7 +176,7 @@ RankBay1 <- as.data.frame(RankBay1) %>%
   arrange(match(dpto_ccdgo, Names))
 
 set.seed(123)
-km <- kmeans(as.numeric(RankBay1$MEDIAS), centers = 5, nstart = 25); km$cluster
+km <- kmeans(as.numeric(RankBay1$MEDIAS), centers = 3, nstart = 25)#; km$cluster
 
 RankBay1 <- RankBay1 %>%
   mutate(cluster = km$cluster) 
@@ -196,7 +196,8 @@ shp1 <- shp1 %>%
 shp1$Class <- Mod1$classification
 
 
-colors <- c("#eeaf61", "#fb9062", "#ee5d6c", "#ce4993", "#6a0d83")
+colors <- c("#eeaf61", "#ee5d6c", "#6a0d83")
+
 
 # Mapa con K-Means
 ggplot(data = shp1) +

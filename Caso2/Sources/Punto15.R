@@ -195,41 +195,6 @@ p1 <- ggplot(data = Map_Choco) +
     axis.text = element_blank(),
     axis.ticks = element_blank(),
     panel.grid = element_blank()
-  )
-
-
-
-p2 <- ggplot(data = Map_Guinia) +
-  geom_sf(aes(fill = COBERTURA_NETA_SECUNDARIA), color = "white", size = 0.2) +
-  scale_fill_gradient2(low = "#eeaf61", mid = "#ff9818", high = "#6a0d83", 
-                       midpoint = 30, name = "CNS", na.value = "gray90") +
-  ggtitle("COBERTURA NETA SECUNDARIA EN LOS MUNICIPIOS DE GUAINÍA",
-          subtitle = "CNS EN GUAINÍA COLOMBIA 2022") +
-  theme_minimal() +
-  theme(
-    plot.title = element_text(size = 12, face = "bold", hjust = 0.5),
-    plot.subtitle = element_text(size = 11, face = "bold", hjust = 0.5, color = "grey40"),
-    axis.text = element_blank(),
-    axis.ticks = element_blank(),
-    panel.grid = element_blank()
-  )
-
-p1 + p2
-
-
-p1 <- ggplot(data = Map_Choco) +
-  geom_sf(aes(fill = COBERTURA_NETA_SECUNDARIA), color = "white", size = 0.2) +
-  scale_fill_gradient2(low = "#eeaf61", mid = "#ff9818", high = "#6a0d83", 
-                       midpoint = 30, name = "CNS", na.value = "gray90") +
-  ggtitle("COBERTURA NETA SECUNDARIA EN LOS MUNICIPIOS DE CHOCÓ",
-          subtitle = "CNS EN CHOCÓ COLOMBIA 2022") +
-  theme_minimal() +
-  theme(
-    plot.title = element_text(size = 12, face = "bold", hjust = 0.5),
-    plot.subtitle = element_text(size = 11, face = "bold", hjust = 0.5, color = "grey40"),
-    axis.text = element_blank(),
-    axis.ticks = element_blank(),
-    panel.grid = element_blank()
   ) +
   coord_sf(datum = NA)  # Esto evita que la proyección afecte el tamaño
 
@@ -248,11 +213,6 @@ p2 <- ggplot(data = Map_Guinia) +
     panel.grid = element_blank()
   ) +
   coord_sf(datum = NA)
-
-p1 + p2
-
-
-
 
 
 p1 + p2 + plot_layout(widths = c(1.5, 1))
